@@ -10,7 +10,7 @@
 #// Java - import classes or packages as required (certain ones)
 
 #// Java only - instantiate any required classes and main
-#// Java only - load.Library to bring Open CV here  
+#// Java only - load.Library to bring (OpenCV here)  
 
 #// define a string variable for the path to the file
 
