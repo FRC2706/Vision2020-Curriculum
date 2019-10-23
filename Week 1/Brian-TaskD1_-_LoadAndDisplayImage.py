@@ -11,13 +11,14 @@
 
 import numpy as np
 import cv2
+from pathlib import Path
 
 #// Java only - instantiate any required classes and main
 #// Java only - load.Library (OpenCV here)  
 
 #// define a string variable for the path to the file
 
-strImageInput = 'Cube01.jpg'
+strImageInput = str(Path(__file__).parent.parent) + '/CalibrationImages/Cube01.jpg'
 
 #// load a color image using string
 
