@@ -3,3 +3,7 @@
 #// Although the debate will endure about what language is a good starting one, if you plan to make a career of programming, knowing both Java and Python will never hurt.
 #// There is a lot of FRC code online in both languages specifically for vision, and understanding what others have done aids the learning process
 #// Find some examples of vision code for FRC online, and post links below.
+
+https://github.com/FantasticNinjas/CCHS-FRC-Camera/tree/master/src/robot/vision
+https://github.com/Team254/FRC-2017-Public/tree/master/src/com/team254/frc2017/vision
+https://github.com/MRT3216/MRT3216-2019-DeepSpace/blob/master/Vision/ChickenVision.py
