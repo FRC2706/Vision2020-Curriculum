@@ -10,7 +10,7 @@
 #// Python - import modules of code as required (OpenCV here)
 import cv2
 import numpy as np
-print("ahah")
+print("testing")
 
 while(True):
     #// define a string variable for the path to the file

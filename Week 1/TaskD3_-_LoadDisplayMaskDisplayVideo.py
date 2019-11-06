@@ -7,10 +7,6 @@
 
 #// Imports!
 #// Python - import modules of code as required (OpenCV here)
-#// Java - import classes or packages as required (certain ones)
-
-#// Java only - instantiate any required classes and main
-#// Java only - load.Library (OpenCV here)  
 
 #// define the camera
 
@@ -27,3 +23,38 @@
 #// check for user input to exit loop and if not return to top of loop
 
 #// cleanup and exit.
+
+import cv2
+import numpy as np
+print("testing")
+
+while(True):
+    #// define a string variable for the path to the file
+    cap = cv2.VideoCapture(0)
+
+    # Take each frame
+    _, frame = cap.read()
+
+    # Convert BGR to HSV
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    # define range of yellow color in HSV
+    lower_yellow = np.array([25,52,75]) #values from dada
+    upper_yellow = np.array([102,255,255])
+
+    # Threshold the HSV image to get only colors
+    mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+
+    # Bitwise-AND mask and original image
+    res = cv2.bitwise_and(frame,frame, mask= mask)
+
+    #// display the masked images to screen
+    cv2.imshow('frame',frame)
+    cv2.imshow('mask',mask)
+    cv2.imshow('res',res)
+    
+    k = cv2.waitKey(1) & 0xFF
+    if k == 27:
+        break
+
+cv2.destroyAllWindows()
