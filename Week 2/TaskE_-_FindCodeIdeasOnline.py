@@ -13,6 +13,12 @@
 
 # https://github.com/team3997/ChickenVision Chicken Vision all files from Team 3997
 # https://github.com/MRT3216/MRT3216-2019-DeepSpace/blob/master/Vision/ChickenVision.py Vision file from Chicken Vision
+# https://github.com/team3997/ChickenVision
+# https://github.com/MRT3216/MRT3216-2019-DeepSpace/blob/master/Vision/ChickenVision.py
+
+# https://github.com/chargingchampions/FRC-2019-Vision-Code-Python
+
+# https://github.com/iliterobotics/FRC-Vision/blob/master/src/main/java/com/fauge/robotics/towertracker/TowerTracker.java
 
 # https://github.com/chargingchampions/FRC-2019-Vision-Code-Python Team 6560 Vision Code in python
 
