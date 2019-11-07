@@ -10,18 +10,18 @@ while(1):
 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    lower_yellow = np.array([0,150,150])
-    upper_yellow = np.array([120,255,255])
+    lower_yellow = np.array([28,128,128])
+    upper_yellow = np.array([32,255,255])
 
 
     mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
 
     res = cv2.bitwise_and(frame,frame, mask= mask)
 
-    cv2.imshow('frame',frame)
-    cv2.imshow('mask',mask)
-    cv2.imshow('res',res)
-    k = cv2.waitKey(5) & 0xFF
+    cv2.imshow('Original',frame)
+    cv2.imshow('Masked Image',mask)
+    cv2.imshow('Coloured Masked Image',res)
+    k = cv2.waitKey(0) & 0xFF
     
     if k == 27:
         break
