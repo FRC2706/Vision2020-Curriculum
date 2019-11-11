@@ -12,13 +12,13 @@ import numpy as np
 import cv2
 from pathlib import Path
 
-strVisionRoot = Path(__file__)
-print(strVisionRoot)
-if strVisionRoot is '.':
-    strVisionRoot = Path().cwd().parent
-print(strVisionRoot)
+# ask pathlib for python code file path and determine root of repository
+posCodePath = Path(__file__).absolute()
+# print(posCodePath)
+strVisionRoot = posCodePath.parent.parent
+# print(strVisionRoot)
 
-# define a string variable for the path to the file
+# define a string variable for the path to the image file
 strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
 
 # load a color image using string
