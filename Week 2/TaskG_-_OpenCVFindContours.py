@@ -52,11 +52,12 @@ cv2.imshow('binary_mask',binary_mask)
 # cv2.imshow('yellow_masked',yellow_mask)
 
 # generate the contours and display
-#imgFindOutput, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+imgFindContours, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+#contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgContours = yellow_mask.copy()
 cv2.drawContours(imgContours, contours, -1, purple, 10)
 cv2.imshow('contours over yellow mask', imgContours)
+#cv2.imshow('findCountours Image result', imgFindCOutput)
 print(contours)
 
 # wait for user input to close
