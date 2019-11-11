@@ -16,8 +16,10 @@
 
 import numpy as np
 import cv2
+import sys
 from pathlib import Path
 
+print("Using python version {0}".format(sys.version))
 print('OpenCV Version = ', cv2.__version__)
 print()
 
@@ -61,7 +63,7 @@ yellow_mask = cv2.bitwise_and(hsvImageInput, hsvImageInput, mask=binary_mask)
 
 # generate the contours and display
 #imgFindOutput, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-ret, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+imgFindContourReturn, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgContours = yellow_mask.copy()
 cv2.drawContours(imgContours, contours, -1, purple, 10)
 #cv2.imshow('contours over yellow mask', imgContours)
@@ -69,7 +71,8 @@ cv2.drawContours(imgContours, contours, -1, purple, 10)
 
 # Moment and Centroid
 cnt = contours[0]
-#print('original',cnt)
+print('original',len(cnt),cnt)
+print('original contour length = ', len(cnt))
 M = cv2.moments(cnt)
 #print( M )
 cx = int(M['m10']/M['m00'])
@@ -89,11 +92,13 @@ print('perimeter = ', perimeter)
 # Contour Approximation
 epsilon = 0.1*cv2.arcLength(cnt,True)
 approx = cv2.approxPolyDP(cnt,epsilon,True)
-print('approx', approx)
+#print('approx', approx)
+print('approx contour length = ', len(approx))
 
 # Hull
 hull = cv2.convexHull(cnt)
-print('hull', hull)
+#print('hull', hull)
+print('hull contour length = ', len(hull))
 
 # Check Convexity
 print('convexity is', cv2.isContourConvex(cnt))
@@ -107,9 +112,9 @@ cv2.rectangle(imgContours,(x,y),(x+w,y+h),(0,255,0),2)
 rect = cv2.minAreaRect(cnt)
 print('rotated rectangle = ',rect)
 (x,y),(width,height),angleofrotation = rect
-#box = cv2.boxPoints(rect)
-#box = np.int0(box)
-#cv2.drawContours(imgContours,[box],0,(0,0,255),2)
+box = cv2.boxPoints(rect)
+box = np.int0(box)
+cv2.drawContours(imgContours,[box],0,(0,0,255),2)
 
 # minimum enclosing circle
 (x,y),radius = cv2.minEnclosingCircle(cnt)
@@ -123,6 +128,9 @@ ellipse = cv2.fitEllipse(cnt)
 #print(ellipse)
 # search ellipse to find it return a rotated rectangle in which the ellipse fits
 (x,y),(width,height),angleofrotation = ellipse
+print('bounding rectangle of ellipse = ', (x,y) ,(width,height), angleofrotation)
+# search major and minor axis from ellipse
+# https://namkeenman.wordpress.com/2015/12/21/opencv-determine-orientation-of-ellipserotatedrect-in-fitellipse/
 cv2.ellipse(imgContours,ellipse,(0,255,0),2)
 
 # fitting a line
@@ -132,6 +140,10 @@ rows,cols = binary_mask.shape[:2]
 lefty = int((-x*vy/vx) + y)
 righty = int(((cols-x)*vy/vx)+y)
 cv2.line(imgContours,(cols-1,righty),(0,lefty),(0,255,0),2)
+# http://ottonello.gitlab.io/selfdriving/nanodegree/python/line%20detection/2016/12/18/extrapolating_lines.html
+slope = vy / vx
+intercept = y - (slope * x)
+print('fitLine y = ', slope, '* x + ', intercept)
 
 # Display the contours and maths generated
 cv2.imshow('contours and math over yellow mask', imgContours)
