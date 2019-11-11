@@ -12,8 +12,14 @@ import numpy as np
 import cv2
 from pathlib import Path
 
+strVisionRoot = Path(__file__)
+print(strVisionRoot)
+if strVisionRoot is '.':
+    strVisionRoot = Path().cwd().parent
+print(strVisionRoot)
+
 # define a string variable for the path to the file
-strImageInput = str(Path(__file__).parent.parent / 'CalibrationImages' / 'Cube01.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)
