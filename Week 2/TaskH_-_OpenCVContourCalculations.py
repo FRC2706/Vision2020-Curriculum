@@ -18,6 +18,9 @@ import numpy as np
 import cv2
 from pathlib import Path
 
+print('OpenCV Version = ', cv2.__version__)
+print()
+
 # define colors for code readablility
 purple = (165, 0, 120)
 red = (0, 0, 255)
@@ -29,7 +32,7 @@ strVisionRoot = posCodePath.parent.parent
 # print(strVisionRoot)
 
 # define a string variable for the path to the image file
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube09.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)
@@ -58,7 +61,7 @@ yellow_mask = cv2.bitwise_and(hsvImageInput, hsvImageInput, mask=binary_mask)
 
 # generate the contours and display
 #imgFindOutput, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+ret, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgContours = yellow_mask.copy()
 cv2.drawContours(imgContours, contours, -1, purple, 10)
 #cv2.imshow('contours over yellow mask', imgContours)
@@ -124,8 +127,8 @@ cv2.ellipse(imgContours,ellipse,(0,255,0),2)
 
 # fitting a line
 rows,cols = binary_mask.shape[:2]
-#[vx,vy,x,y] = cv.fitLine(cnt, cv.DIST_L2,0,0.01,0.01) errors, search online and found fix
-[vx,vy,x,y] = cv2.fitLine(cnt, cv2.cv.CV_DIST_L2,0,0.01,0.01)
+#[vx,vy,x,y] = cv.fitLine(cnt, cv2.DIST_L2,0,0.01,0.01) #errors in VS Code, search online and found fix
+[vx,vy,x,y] = cv2.fitLine(cnt, cv2.DIST_L2,0,0.01,0.01)
 lefty = int((-x*vy/vx) + y)
 righty = int(((cols-x)*vy/vx)+y)
 cv2.line(imgContours,(cols-1,righty),(0,lefty),(0,255,0),2)
