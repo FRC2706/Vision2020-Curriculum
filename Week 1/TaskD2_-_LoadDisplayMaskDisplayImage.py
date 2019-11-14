@@ -47,7 +47,10 @@ cv2.imshow('binary_mask',binary_mask)
 cv2.imshow('yellow_masked',yellow_mask)
 
 # wait for user input to close
-k = cv2.waitKey(0)
+while(True):
+    k = cv2.waitKey(0)
+    if k == 27:
+        break
 
 # cleanup and exit
 cv2.destroyAllWindows()
