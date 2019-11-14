@@ -18,4 +18,32 @@
 
 # Post a few favourie links and code snippets into your copy of this file, then push to github.
 
+import sys
+import numpy as np
+import cv2
+import math
+
+
+def threshold_range(im, lo, hi):
+    unused, t1 = cv2.threshold(im, lo, 255, type=cv2.THRESH_BINARY)
+    unused, t2 = cv2.threshold(im, hi, 255, type=cv2.THRESH_BINARY_INV)
+    return cv2.bitwise_and(t1, t2)
+
+
+img = cv2.imread()
+cv2.imshow('image', img)
+
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+h, s, v = cv2.split(hsv)
+a, b = 2, 1
+h = threshold_range(h, 63, 105)
+s = threshold_range(s, 7, 255)
+v = threshold_range(v, 67, 242)
+#cv2.imshow('s', s)
+combined = cv2.bitwise_and(h, cv2.bitwise_and(s,v))
+
+
+cv2.imshow('image', img)
+cv2.waitKey(0)
 

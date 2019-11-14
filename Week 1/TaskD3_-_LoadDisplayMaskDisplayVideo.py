@@ -39,7 +39,7 @@ while(True):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # define range of yellow color in HSV
-    lower_yellow = np.array([25,52,75]) #values from dada
+    lower_yellow = np.array([25,52,75]) #values from hsv colour wheel
     upper_yellow = np.array([102,255,255])
 
     # Threshold the HSV image to get only colors
