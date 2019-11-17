@@ -26,4 +26,3 @@ k = cv2.waitKey(0)
 
 # cleanup and exit
 cv2.destroyAllWindows()
-
