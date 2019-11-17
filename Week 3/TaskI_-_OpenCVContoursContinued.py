@@ -27,7 +27,7 @@ print()
 # define colors for code readablility
 purple = (165, 0, 120)
 blue = (255, 0, 0)
-green = (0, 255, 255)
+green = (0, 255, 0)
 red = (0, 0, 255)
 
 # ask pathlib for python code file path and determine root of repository
