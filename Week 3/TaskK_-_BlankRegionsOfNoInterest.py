@@ -11,14 +11,26 @@ import numpy as np
 import cv2
 from pathlib import Path
 
+white = (255,255,255)
+
 # define a string variable for the path to the file
-strImageInput = str(Path(__file__).parent.parent / 'CalibrationImages' / 'Cube01.jpg')
+strImageInput = str(Path(__file__).parent.parent / 'CalibrationImages' / 'Cube10.jpg')
 
 # load a color image using string variable
 imgImageInput = cv2.imread(strImageInput)
 
+# construct a special mask for only the lower portion of the image
+binary_mask = np.zeros(shape = imgImageInput.shape, dtype = "uint8")
+
+# draw a white rectangle on only the lower half of the binary mask
+intBinaryHeight,intBinaryWidth = binary_mask.shape[:2]
+cv2.rectangle(binary_mask, (0,int(intBinaryHeight/2-10)), (intBinaryWidth, intBinaryHeight), white, -1)
+
+# bitwise and the binary mask and the Image Input to produce modified image
+imgImageModified = cv2.bitwise_and(imgImageInput, binary_mask)
+
 # display the color image to screen
-cv2.imshow('image-windows-title-bar',imgImageInput)
+cv2.imshow('image-windows-title-bar',imgImageModified)
 
 # wait for user input to close
 k = cv2.waitKey(0)
