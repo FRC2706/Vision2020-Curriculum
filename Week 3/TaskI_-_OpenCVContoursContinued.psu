@@ -4,9 +4,10 @@
 # our vision code.  For a given single contour, (meaning it was imaged and masked and 
 # converted to a coordinate array), you need to be able to use a number of OpenCV functions.
 # Please experiment with the following, easiest is to simply draw them back to a blank image
-# or on top of original.
+# or on top of original.  Some very important OpenCV produced actions van only br
+# printed to the console or used in code to filter contours.
 
-# - contour perimeter, contour approximation, bounding rectangles, 
+# Continuing from last week - contour perimeter, contour approximation, bounding rectangles, 
 # minimum enclosing circle, fitting elipse, fitting line, aspect ratio
 # extent, solidity, equivalent diameter, orientation, points, min/max
 # mean color, extreme points
