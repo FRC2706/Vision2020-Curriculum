@@ -5,6 +5,7 @@
 # modify a photo to contain black pixels in areas with no interest to our code
 
 # Task D1 can be copied here and modified
+# based on ideas from https://datacarpentry.org/image-processing/04-drawing-bitwise/
 
 # Imports
 import numpy as np
