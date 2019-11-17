@@ -6,10 +6,7 @@
 # Please experiment with the following, easiest is to simply draw them back to a blank image
 # or on top of original.
 
-# - moments, contour area, contour perimeter, contour approximation, bounding rectangles, 
-# minimum enclosing circle, fitting elipse, fitting line, etc.
+# - moments and contour area
 
 # useful links
 # https://docs.opencv.org/3.4.7/dd/d49/tutorial_py_contour_features.html
-# https://docs.opencv.org/3.4.7/d1/d32/tutorial_py_contour_properties.html
-
