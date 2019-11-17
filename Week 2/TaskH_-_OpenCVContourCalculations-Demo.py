@@ -1,11 +1,17 @@
 # This is a pseudo code file for Merge Robotics, 2020, Infinite Recharge
-# This is task G - > Find Contours.  This is a seemingly simple command. But is where the real math begins.  
-# The command basically converts the masked image into arrays of coordinates that we do math on.  Make sure
-# you can do this in your code.  You need to end up with a set of contours!  If you print them to the console
-# you will see pages and pages of coordinates go by.  Do that at least once.
+# This is task H - > OpenCV "Contour Calculations."  Not sure if it is clear by now, 
+# but OpenCV can do a lot of things, we need to understand what it offers to complete 
+# our vision code.  For a given single contour, (meaning it was imaged and masked and 
+# converted to a coordinate array), you need to be able to use a number of OpenCV functions.
+# Please experiment with the following, easiest is to simply draw them back to a blank image
+# or on top of original.
+
+# - moments, contour area, contour perimeter, contour approximation, bounding rectangles, 
+# minimum enclosing circle, fitting elipse, fitting line, etc.
 
 # useful links
-# https://docs.opencv.org/3.4.7/d4/d73/tutorial_py_contours_begin.html
+# https://docs.opencv.org/3.4.7/dd/d49/tutorial_py_contour_features.html
+# https://docs.opencv.org/3.4.7/d1/d32/tutorial_py_contour_properties.html
 
 import numpy as np
 import cv2
@@ -28,7 +34,7 @@ strVisionRoot = posCodePath.parent.parent
 # print(strVisionRoot)
 
 # define a string variable for the path to the image file
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube09.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)
@@ -70,8 +76,29 @@ im2, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAI
 print('found contours = ',len(contours))
 print()
 
-cv2.drawContours(imgImageInput, contours, -1, purple, 10)
-cv2.imshow('imgImageInput', imgImageInput)
+imgShowMaths = imgImageInput.copy()
+
+cv2.drawContours(imgShowMaths, contours, -1, purple, 10)
+
+# calculate the moments and centroid
+cnt = contours[0]
+M = cv2.moments(cnt)
+print(M)
+print()
+
+cx = int(M['m10']/M['m00'])
+cy = int(M['m01']/M['m00'])
+
+# cv2.line (begin coords, end coords, color, width)
+cv2.line(imgShowMaths,(cx-10,cy-10),(cx+10,cy+10),red,2)
+cv2.line(imgShowMaths,(cx-10,cy+10),(cx+10,cy-10),red,2)
+
+# Area
+area = cv2.contourArea(cnt)
+print('area = ', area)
+
+# 
+cv2.imshow('imgShowMaths', imgShowMaths)
 
 # wait for user input to close
 while(True):
