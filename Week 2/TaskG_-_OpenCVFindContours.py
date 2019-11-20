@@ -21,9 +21,10 @@
 import numpy as np
 import cv2
 from pathlib import Path
+import sys
 
 # define colors for code readablility
-purple = (165, 0, 120)
+colour = (255, 255, 0)
 
 # ask pathlib for python code file path and determine root of repository
 posCodePath = Path(__file__).absolute()
@@ -60,13 +61,26 @@ cv2.imshow('binary_mask',binary_mask)
 # cv2.imshow('yellow_masked',yellow_mask)
 
 # generate the contours and display
-imgFindContours, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 #contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgContours = yellow_mask.copy()
-cv2.drawContours(imgContours, contours, -1, purple, 10)
+cv2.drawContours(imgContours, contours, -1, colour, 10)
 cv2.imshow('contours over yellow mask', imgContours)
 #cv2.imshow('findCountours Image result', imgFindCOutput)
 print(contours)
+
+
+
+cnt = contours [0]
+M = cv2.moments(cnt)
+print (M)
+
+cx = int(M['m10']/M['m00'])
+cy = int(M['m01']/M['m00'])
+
+cv2.line(imgShowMaths,(cx-10,cy-10),(cx+10,cy+10),(255,255,0),0)
+
+
 
 # wait for user input to close
 k = cv2.waitKey(0)
