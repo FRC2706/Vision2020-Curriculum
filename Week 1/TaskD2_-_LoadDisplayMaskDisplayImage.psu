@@ -12,16 +12,23 @@
 #// Java only - instantiate any required classes and main
 #// Java only - load.Library (OpenCV here)  
 
-#// define a string variable for the path to the file
+# define a string variable for the path to the file
+filename = 'C:\Bob\FRC\FRC-2020\Vision2020-Curriculum\Week 1\images_green_tape_rl\IMG_6593_green_tape_scaled.jpg'
 
 #// load a color image using string
+img = cv2.imread(filename, cv2.IMREAD_COLOR)
 
 #// display the color image to screen
+cv2.imshow('image',img)
 
 #// mask the image to only show yellow or green images
+imgMasked = cv2.inRange(img, np.array([0, 254, 0]), np.array([255, 255, 255]));
 
 #// display the masked images to screen
+cv2.imshow('imageMasked',imgMasked)
 
 #// wait for user input to close
+cv2.waitKey(0)
 
 #// cleanup and exit
+cv2.destroyAllWindows()

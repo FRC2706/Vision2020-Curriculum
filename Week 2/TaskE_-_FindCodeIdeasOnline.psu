@@ -5,10 +5,40 @@
 # searches some time and see what you can find.  
 
 # Google searches:
+#
 # - "chief Delphi vision 2019"
+#
+#---------------
+Chicken vision:
+https://www.chiefdelphi.com/t/pre-made-vision-system-for-2019-season-chicken-vision/340583
+https://github.com/team3997/ChickenVision
+#---------------
+
+Question on approaches to vision that other teams used:
+https://www.chiefdelphi.com/t/what-types-of-vision-processing-are-teams-using-for-2019/338598
+
+Systems that were mentioned:
+limelight
+https://limelightvision.io
+
+roborealm
+http://www.roborealm.com/
+
+grip
+using blue to improve finding targets
+USB cam
+IP cam
+Jevois
+Jetson TX1 with custom Python code for vision processing
+
+Approach that Team 2877 Ligerbots used:
+https://www.chiefdelphi.com/t/a-step-by-step-run-through-of-frc-vision-processing/341012
+
 # - "github frc python vision"
+https://github.com/chargingchampions/FRC-2019-Vision-Code-Python
+
 # - "github frc java vision"
+https://github.com/FRCTeam3255
 
 # Post a few favourie links into your copy of this file, then push to github.
-
 
