@@ -8,39 +8,75 @@
 #// Imports!
 #// Python - import modules of code as required (OpenCV here)
 #// Java - import classes or packages as required (certain ones)
-import numpy as np
-import cv2
+
+#import numpy as np
+#import cv2
 
 #define a string variable for the path to the file
-file = 'Cube01.jpg'
+#file = 'Cube01.jpg'
 
 #load a color image using string
-img = cv2.imread(file, cv2.IMREAD_COLOR)
+#img = cv2.imread(file, cv2.IMREAD_COLOR)
 
 #display the color image to screen
-cv2.imshow(file,img)
+#cv2.imshow(file,img)
 
 #mask the image to only show yellow or green images
 
 # Convert BGR to HSV
-hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+#hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 # define range of blue color in HSV
-lower_yellow = np.array([0,150,150])
-upper_green = np.array([120,255,255])
+#lower_yellow = np.array([0,150,150])
+#upper_green = np.array([120,255,255])
 
 # Threshold the HSV image to get only yellow and green colors
-mask = cv2.inRange(hsv, lower_yellow, upper_green)
+#mask = cv2.inRange(hsv, lower_yellow, upper_green)
 
 # Bitwise-AND mask and original image
-res = cv2.bitwise_and(img,img, mask= mask)   
+#res = cv2.bitwise_and(img,img, mask= mask)   
 
 #display the masked images to screen
-cv2.imshow('mask',mask)
-cv2.imshow('res',res)
+#cv2.imshow('mask',mask)
+#cv2.imshow('res',res)
 
 #wait for user input to close
-cv2.waitKey(0)
+#cv2.waitKey(0)
   
 #cleanup and exit
+#cv2.destroyAllWindows()
+
+
+
+
+
+
+import cv2
+import numpy as np
+
+
+
+while(1):
+    cap = cv2.VideoCapture str(Path(__file__).parent.parent / 'CalibrationImages' / 'Cube01.jpg')
+
+    _, frame = cap.read()
+
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    lower_yellow = np.array([28,128,128])
+    upper_yellow = np.array([32,255,255])
+
+
+    mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+
+    res = cv2.bitwise_and(frame,frame, mask= mask)
+
+    cv2.imshow('Original',frame)
+    cv2.imshow('Masked Image',mask)
+    cv2.imshow('Coloured Masked Image',res)
+    k = cv2.waitKey(0) & 0xFF
+    
+    if k == 27:
+        break
+    
 cv2.destroyAllWindows()
