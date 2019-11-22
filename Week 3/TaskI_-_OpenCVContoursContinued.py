@@ -65,18 +65,13 @@ yellow_mask = cv2.bitwise_and(imgImageInput, imgImageInput, mask=binary_mask)
 #cv2.imshow('yellow_masked',yellow_mask)
 
 # generate the contours and display
-#imgFindOutput, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgFindContourReturn, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgContours = yellow_mask.copy()
 cv2.drawContours(imgContours, contours, -1, purple, 10)
-cv2.imshow('contours over yellow mask', imgContours)
 print('Found ', len(contours), 'contours in image')
 
-# sort contours by size, and keep largest 12
-initialSortedContours = sorted(contours, key = cv2.contourArea, reverse = True)[:12] 
-
 # Moment and Centroid
-cnt = initialSortedContours[0]
+cnt = contours[0]
 print(cnt)
 #print('original',len(cnt),cnt)
 print('original contour length = ', len(cnt))
@@ -114,7 +109,6 @@ print('hull contour length = ', len(hull))
 cv2.drawContours(imgContours, hull, -1, red, 10)
 #cv2.imshow('hull over yellow mask', imgContours)
 
-
 # Check Convexity
 print('convexity is', cv2.isContourConvex(cnt))
 
@@ -130,12 +124,6 @@ print('rotated rectangle = ',rect)
 box = cv2.boxPoints(rect)
 box = np.int0(box)
 cv2.drawContours(imgContours,[box],0,blue,2)
-
-#cv2.imshow('rectangles over yellow mask', imgContours)
-
-# wait for user input to close
-#k = cv2.waitKey(0)
-
 
 # minimum enclosing circle
 (x,y),radius = cv2.minEnclosingCircle(cnt)
