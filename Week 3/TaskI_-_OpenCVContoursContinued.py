@@ -36,14 +36,15 @@ posCodePath = Path(__file__).absolute()
 strVisionRoot = posCodePath.parent.parent
 # print(strVisionRoot)
 
-# define a string variable for the path to the image file
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube09.jpg')
+# define a string variable for the path to the image file#
+#strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube07.jpg')
+strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-18.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)
 
 # display the color image to screen
-# cv2.imshow('input-image-title-bar', imgImageInput)
+cv2.imshow('input-image-title-bar', imgImageInput)
 
 # Convert BGR to HSV
 hsvImageInput = cv2.cvtColor(imgImageInput, cv2.COLOR_BGR2HSV)
@@ -60,29 +61,35 @@ binary_mask = cv2.inRange(hsvImageInput, lower_yellow, upper_yellow)
 yellow_mask = cv2.bitwise_and(hsvImageInput, hsvImageInput, mask=binary_mask)
 
 # display the masked images to screen
-# cv2.imshow('hsvImageInput', hsvImageInput)
-#cv2.imshow('binary_mask',binary_mask)
-# cv2.imshow('yellow_masked',yellow_mask)
+cv2.imshow('hsvImageInput', hsvImageInput)
+cv2.imshow('binary_mask',binary_mask)
+cv2.imshow('yellow_masked',yellow_mask)
 
 # generate the contours and display
 #imgFindOutput, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgFindContourReturn, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgContours = yellow_mask.copy()
-cv2.drawContours(imgContours, contours, -1, purple, 10)
-#cv2.imshow('contours over yellow mask', imgContours)
-#print(contours)
+#cv2.drawContours(imgContours, contours, -1, purple, 10)
+cv2.imshow('contours over yellow mask', imgContours)
+print('Found ', len(contours), 'contours in image')
+
+# sort contours by size, and keep largest 12
+initialSortedContours = sorted(contours, key = cv2.contourArea, reverse = True)[:12] 
 
 # Moment and Centroid
-cnt = contours[0]
-print('original',len(cnt),cnt)
+cnt = initialSortedContours[0]
+print(cnt)
+#print('original',len(cnt),cnt)
 print('original contour length = ', len(cnt))
 M = cv2.moments(cnt)
-#print( M )
+print( M )
 cx = int(M['m10']/M['m00'])
 cy = int(M['m01']/M['m00'])
 print('centroid = ',cx,cy)
 cv2.line(imgContours,(cx-10,cy-10),(cx+10,cy+10),red,2)
 cv2.line(imgContours,(cx-10,cy+10),(cx+10,cy-10),red,2)
+
+cv2.drawContours(imgContours, cnt, -1, purple, 10)
 
 # Area
 area = cv2.contourArea(cnt)
@@ -93,15 +100,21 @@ perimeter = cv2.arcLength(cnt,True)
 print('perimeter = ', perimeter)
 
 # Contour Approximation
-epsilon = 0.1*cv2.arcLength(cnt,True)
+epsilon = 0.005*cv2.arcLength(cnt,True)
 approx = cv2.approxPolyDP(cnt,epsilon,True)
 #print('approx', approx)
+#cv2.drawContours(imgContours, approx, -1, red, 10)
 print('approx contour length = ', len(approx))
+#cv2.imshow('approx over yellow mask', imgContours)
+
 
 # Hull
 hull = cv2.convexHull(cnt)
-#print('hull', hull)
+print('hull', hull)
 print('hull contour length = ', len(hull))
+#cv2.drawContours(imgContours, hull, -1, red, 10)
+#cv2.imshow('hull over yellow mask', imgContours)
+
 
 # Check Convexity
 print('convexity is', cv2.isContourConvex(cnt))
@@ -119,6 +132,12 @@ box = cv2.boxPoints(rect)
 box = np.int0(box)
 cv2.drawContours(imgContours,[box],0,red,2)
 
+cv2.imshow('rectangles over yellow mask', imgContours)
+
+# wait for user input to close
+k = cv2.waitKey(0)
+
+
 # minimum enclosing circle
 (x,y),radius = cv2.minEnclosingCircle(cnt)
 print('minimum enclosing circle = ', (x,y),radius)
@@ -128,7 +147,7 @@ cv2.circle(imgContours,center,radius,green,2)
 
 # fitting an elipse
 ellipse = cv2.fitEllipse(cnt)
-#print(ellipse)
+print(ellipse)
 # search ellipse to find it return a rotated rectangle in which the ellipse fits
 (x,y),(width,height),angleofrotation = ellipse
 print('bounding rectangle of ellipse = ', (x,y) ,(width,height), angleofrotation)

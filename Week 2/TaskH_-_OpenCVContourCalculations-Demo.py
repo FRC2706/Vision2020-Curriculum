@@ -32,7 +32,7 @@ strVisionRoot = posCodePath.parent.parent
 # print(strVisionRoot)
 
 # define a string variable for the path to the image file
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube09.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)

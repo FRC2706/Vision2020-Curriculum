@@ -28,13 +28,13 @@ strVisionRoot = posCodePath.parent.parent
 # print(strVisionRoot)
 
 # define a string variable for the path to the image file
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube09.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)
 
 # display the color image to screen
-#cv2.imshow('input-image-title-bar', imgImageInput)
+cv2.imshow('input-image-title-bar', imgImageInput)
 
 # Convert BGR to HSV
 hsvImageInput = cv2.cvtColor(imgImageInput, cv2.COLOR_BGR2HSV)
@@ -51,20 +51,20 @@ binary_mask = cv2.inRange(hsvImageInput, lower_yellow, upper_yellow)
 yellow_mask = cv2.bitwise_and(hsvImageInput, hsvImageInput, mask=binary_mask)
 
 # display the masked images to screen
-#cv2.imshow('hsvImageInput', hsvImageInput)
+cv2.imshow('hsvImageInput', hsvImageInput)
 cv2.imshow('binary_mask',binary_mask)
-#cv2.imshow('yellow_masked',yellow_mask)
+cv2.imshow('yellow_masked',yellow_mask)
 
 # calculate contours
 #im2 = imgImageInput.copy()
 im2, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
 # show im2
-#cv2.imshow('im2',im2)
+# cv2.imshow('im2',im2)
 
 # print out contours
-#print(contours)
-#print(hierarchy)
+print(contours)
+print(hierarchy)
 
 # print count of contours
 print('found contours = ',len(contours))
