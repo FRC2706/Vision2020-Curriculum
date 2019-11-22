@@ -37,14 +37,13 @@ strVisionRoot = posCodePath.parent.parent
 # print(strVisionRoot)
 
 # define a string variable for the path to the image file#
-#strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube07.jpg')
-strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-18.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube09.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)
 
 # display the color image to screen
-cv2.imshow('input-image-title-bar', imgImageInput)
+#cv2.imshow('input-image-title-bar', imgImageInput)
 
 # Convert BGR to HSV
 hsvImageInput = cv2.cvtColor(imgImageInput, cv2.COLOR_BGR2HSV)
@@ -58,18 +57,18 @@ binary_mask = cv2.inRange(hsvImageInput, lower_yellow, upper_yellow)
 
 # mask the image to only show yellow or green images
 # Bitwise-AND mask and original image
-yellow_mask = cv2.bitwise_and(hsvImageInput, hsvImageInput, mask=binary_mask)
+yellow_mask = cv2.bitwise_and(imgImageInput, imgImageInput, mask=binary_mask)
 
 # display the masked images to screen
-cv2.imshow('hsvImageInput', hsvImageInput)
-cv2.imshow('binary_mask',binary_mask)
-cv2.imshow('yellow_masked',yellow_mask)
+#cv2.imshow('hsvImageInput', hsvImageInput)
+#cv2.imshow('binary_mask',binary_mask)
+#cv2.imshow('yellow_masked',yellow_mask)
 
 # generate the contours and display
 #imgFindOutput, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgFindContourReturn, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 imgContours = yellow_mask.copy()
-#cv2.drawContours(imgContours, contours, -1, purple, 10)
+cv2.drawContours(imgContours, contours, -1, purple, 10)
 cv2.imshow('contours over yellow mask', imgContours)
 print('Found ', len(contours), 'contours in image')
 
@@ -112,7 +111,7 @@ print('approx contour length = ', len(approx))
 hull = cv2.convexHull(cnt)
 print('hull', hull)
 print('hull contour length = ', len(hull))
-#cv2.drawContours(imgContours, hull, -1, red, 10)
+cv2.drawContours(imgContours, hull, -1, red, 10)
 #cv2.imshow('hull over yellow mask', imgContours)
 
 
@@ -130,12 +129,12 @@ print('rotated rectangle = ',rect)
 (x,y),(width,height),angleofrotation = rect
 box = cv2.boxPoints(rect)
 box = np.int0(box)
-cv2.drawContours(imgContours,[box],0,red,2)
+cv2.drawContours(imgContours,[box],0,blue,2)
 
-cv2.imshow('rectangles over yellow mask', imgContours)
+#cv2.imshow('rectangles over yellow mask', imgContours)
 
 # wait for user input to close
-k = cv2.waitKey(0)
+#k = cv2.waitKey(0)
 
 
 # minimum enclosing circle
