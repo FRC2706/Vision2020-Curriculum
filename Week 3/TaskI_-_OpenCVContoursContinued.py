@@ -37,7 +37,7 @@ strVisionRoot = posCodePath.parent.parent
 # print(strVisionRoot)
 
 # define a string variable for the path to the image file#
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube09.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)
@@ -72,11 +72,11 @@ print('Found ', len(contours), 'contours in image')
 
 # Moment and Centroid
 cnt = contours[0]
-print(cnt)
+#print(cnt)
 #print('original',len(cnt),cnt)
 print('original contour length = ', len(cnt))
 M = cv2.moments(cnt)
-print( M )
+#print( M )
 cx = int(M['m10']/M['m00'])
 cy = int(M['m01']/M['m00'])
 print('centroid = ',cx,cy)
@@ -101,13 +101,14 @@ approx = cv2.approxPolyDP(cnt,epsilon,True)
 print('approx contour length = ', len(approx))
 #cv2.imshow('approx over yellow mask', imgContours)
 
-
 # Hull
 hull = cv2.convexHull(cnt)
-print('hull', hull)
+#print('hull', hull)
 print('hull contour length = ', len(hull))
 cv2.drawContours(imgContours, hull, -1, red, 10)
 #cv2.imshow('hull over yellow mask', imgContours)
+hull_area = cv2.contourArea(hull)
+print('solidity from convex hull', float(area)/hull_area)
 
 # Check Convexity
 print('convexity is', cv2.isContourConvex(cnt))
@@ -116,6 +117,8 @@ print('convexity is', cv2.isContourConvex(cnt))
 x,y,w,h = cv2.boundingRect(cnt)
 print('straight bounding rectangle = ', (x,y) ,w,h)
 cv2.rectangle(imgContours,(x,y),(x+w,y+h),green,2)
+print('bounding rectangle aspect = ', float(w)/h)
+print('bounding rectangle extend = ', float(area)/(w*h))
 
 # rotated rectangle
 rect = cv2.minAreaRect(cnt)
@@ -124,6 +127,8 @@ print('rotated rectangle = ',rect)
 box = cv2.boxPoints(rect)
 box = np.int0(box)
 cv2.drawContours(imgContours,[box],0,blue,2)
+print('minimum area rectangle aspect = ', float(width)/height)
+print('minimum area rectangle extent = ', float(area)/(width*height))
 
 # minimum enclosing circle
 (x,y),radius = cv2.minEnclosingCircle(cnt)
@@ -131,16 +136,19 @@ print('minimum enclosing circle = ', (x,y),radius)
 center = (int(x),int(y))
 radius = int(radius)
 cv2.circle(imgContours,center,radius,green,2)
+equi_diameter = np.sqrt(4*area/np.pi)
+cv2.circle(imgContours, (cx,cy), int(equi_diameter/2), purple, 3)
 
 # fitting an elipse
 ellipse = cv2.fitEllipse(cnt)
-print(ellipse)
+#print(ellipse)
 # search ellipse to find it return a rotated rectangle in which the ellipse fits
-(x,y),(width,height),angleofrotation = ellipse
-print('bounding rectangle of ellipse = ', (x,y) ,(width,height), angleofrotation)
+(x,y),(majAxis,minAxis),angleofrotation = ellipse
+print('ellipse center, maj axis, min axis, rotation = ', (x,y) ,(majAxis, minAxis), angleofrotation)
 # search major and minor axis from ellipse
 # https://namkeenman.wordpress.com/2015/12/21/opencv-determine-orientation-of-ellipserotatedrect-in-fitellipse/
 cv2.ellipse(imgContours,ellipse,red,2)
+print('ellipse aspect = ', float(majAxis)/minAxis)
 
 # fitting a line
 rows,cols = binary_mask.shape[:2]
@@ -153,6 +161,53 @@ cv2.line(imgContours,(cols-1,righty),(0,lefty),green,2)
 slope = vy / vx
 intercept = y - (slope * x)
 print('fitLine y = ', slope, '* x + ', intercept)
+
+# aspect ratio
+# added retroactively to bounding, min area and elipse
+
+# extent calculation
+# added retroactively to bounding and min area
+
+# solidity
+# added retroactively to the hull
+
+# equivalent diameter
+# added retroactively to the enclosing circle
+
+# orientation
+# tweaked ellipse above to reflect details in link
+
+# mask and pixel points
+# skipping this one...
+
+# Maximum Value, Minimum Value and their locations of a binary mask not contour!
+min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(binary_mask)
+print('min_val = ', min_val)
+print('max_val = ', max_val)
+print('min_loc = ', min_loc)
+print('max_loc = ', max_loc)
+
+# Mean Color or Mean Intensity 
+mean_val1 = cv2.mean(imgImageInput)
+print('mean value from input image = ', mean_val1)
+mean_val2 = cv2.mean(hsvImageInput, mask = binary_mask)
+print('mean value from HSV and mask = ', mean_val2)
+# look at the result of mean_val2 on colorizer.org
+mean_val3 = cv2.mean(yellow_mask)
+print('mean value from colored mask = ', mean_val3)
+
+# extreme points
+leftmost = tuple(cnt[cnt[:,:,0].argmin()][0])
+rightmost = tuple(cnt[cnt[:,:,0].argmax()][0])
+topmost = tuple(cnt[cnt[:,:,1].argmin()][0])
+bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
+# draw extreme points
+# from https://www.pyimagesearch.com/2016/04/11/finding-extreme-points-in-contours-with-opencv/
+cv2.circle(imgContours, leftmost, 12, (0, 0, 255), -1)
+cv2.circle(imgContours, rightmost, 12, (0, 255, 0), -1)
+cv2.circle(imgContours, topmost, 12, (255, 0, 0), -1)
+cv2.circle(imgContours, bottommost, 12, (255, 255, 0), -1)
+print('extreme points', leftmost,rightmost,topmost,bottommost)
 
 # Display the contours and maths generated
 cv2.imshow('contours and math over yellow mask', imgContours)
