@@ -52,7 +52,7 @@ while (True):
     imgImageInput = cv2.imread(strImageInput)
 
 ## display files
-    cv2.imshow('input-image', imgImageInput)
+    cv2.imshow(strImageInput, imgImageInput)
 
 ## loop for user input to close - loop indent 2
     booReqToExit = False # true when user wants to exit
@@ -82,6 +82,9 @@ while (True):
 ## test for exit main loop request from user
     if booReqToExit:
         break
+
+## not exiting, close window before loading next
+    cv2.destroyWindow(strImageInput)
 
 ## end of main loop indent 1
 
