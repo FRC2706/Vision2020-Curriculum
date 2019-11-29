@@ -37,7 +37,8 @@ strVisionRoot = posCodePath.parent.parent
 # print(strVisionRoot)
 
 # define a string variable for the path to the image file#
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube13.png')
+#strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-03.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)
@@ -69,6 +70,9 @@ imgFindContourReturn, contours, hierarchy = cv2.findContours(binary_mask, cv2.RE
 imgContours = yellow_mask.copy()
 cv2.drawContours(imgContours, contours, -1, purple, 10)
 print('Found ', len(contours), 'contours in image')
+
+# sort contours by area descending
+#contours = sorted(contours,key=cv2.contourArea, reverse=True)[12]
 
 # Moment and Centroid
 cnt = contours[0]
@@ -117,8 +121,8 @@ print('convexity is', cv2.isContourConvex(cnt))
 x,y,w,h = cv2.boundingRect(cnt)
 print('straight bounding rectangle = ', (x,y) ,w,h)
 cv2.rectangle(imgContours,(x,y),(x+w,y+h),green,2)
-print('bounding rectangle aspect = ', float(w)/h)
-print('bounding rectangle extend = ', float(area)/(w*h))
+print('bounding rectangle aspect = ', float(w)/float(h))
+print('bounding rectangle extend = ', float(area)/(float(w)*float(h)))
 
 # rotated rectangle
 rect = cv2.minAreaRect(cnt)
