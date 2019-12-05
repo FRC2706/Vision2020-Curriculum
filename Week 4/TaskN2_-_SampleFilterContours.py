@@ -212,7 +212,6 @@ while (True):
 
 ### wait for user to press key
         k = cv2.waitKey(0)
-        print(k)
         if k == 27:
             booReqToExit = True # user wants to exit
             break
