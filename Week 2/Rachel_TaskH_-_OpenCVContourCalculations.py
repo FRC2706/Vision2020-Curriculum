@@ -25,7 +25,7 @@ print('Using OpenCV Version = ', cv2.__version__)
 print()
 
 # Define string variable for path to file
-strImage = "/Users/rachellucyshyn/Documents/GitHub/Vision2020-Curriculum/CalibrationImages/Cube09.jpg"
+strImage = "/Users/rachellucyshyn/Documents/GitHub/Vision2020-Curriculum/CalibrationImages/Cube11.jpg"
 
 # load color image with string
 imgBGRInput = cv2.imread(strImage)
