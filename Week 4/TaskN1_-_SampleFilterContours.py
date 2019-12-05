@@ -24,7 +24,7 @@ strVisionRoot = posCodePath.parent.parent
 
 # define a string variable for the path to the image file
 strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube09.jpg')
-strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-05.jpg')
+#strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-05.jpg')
 
 # load a color image using string
 imgImageInput = cv2.imread(strImageInput)
@@ -48,7 +48,7 @@ yellow_mask = cv2.bitwise_and(hsvImageInput, hsvImageInput, mask=binary_mask)
 
 # display the masked images to screen
 # cv2.imshow('hsvImageInput', hsvImageInput)
-cv2.imshow('binary_mask',binary_mask)
+# cv2.imshow('binary_mask',binary_mask)
 # cv2.imshow('yellow_masked',yellow_mask)
 
 # generate the contours
@@ -64,19 +64,20 @@ print('Found', intInitialContoursFound, 'contours')
 areaSortedContours = sorted(contours, key = cv2.contourArea, reverse = True)[:5]
 print('Found', len(areaSortedContours), 'contours')
 
+imgContours = yellow_mask.copy()
+#cv2.drawContours(imgContours, areaSortedContours, -1, purple, 10)
+
 # create a holder or array for contours we want to keep in first filter
 heightSortedContours = []
 floMaximumHeight = 0.0
 intIndexMaximumHeight = 1
-
-print(areaSortedContours)
 
 # loop through area sorted contours, i is index, indiv is single contour
 for (i, indiv) in enumerate(areaSortedContours):
 
 ## determine minimum area rectangle
     rectangle = cv2.minAreaRect(indiv)
-    (xm,ym),(wm,hm),am = rectangle
+    (xm,ym),(wm,hm), am = rectangle
     print (i,hm)
 
 ## track tallest contour
@@ -84,16 +85,16 @@ for (i, indiv) in enumerate(areaSortedContours):
         floMaximumHeight = hm
         intIndexMaximumHeight = i
 
+# approach 1
+#cv2.drawContours(imgContours, areaSortedContours, intIndexMaximumHeight, purple, 10)
+
 # since we are chosing only 1 tallest, store it to filtered array
-heightSortedContours = areaSortedContours[intIndexMaximumHeight]
+heightSortedContours.append(areaSortedContours[intIndexMaximumHeight])
 
-print(heightSortedContours)
-
-imgContours = yellow_mask.copy()
+# approach 2
 cv2.drawContours(imgContours, heightSortedContours, -1, purple, 10)
 
 cv2.imshow('contours over yellow mask', imgContours)
-#cv2.imshow('findCountours Image result', imgFindCOutput)
 
 # wait for user input to close
 k = cv2.waitKey(0)

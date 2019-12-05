@@ -44,7 +44,7 @@ posCodePath = Path(__file__).absolute()
 strVisionRoot = posCodePath.parent.parent
 
 # define a string variable for the path to the image file
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
+#strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube01.jpg')
 strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-05.jpg')
 
 # load a color image using string
@@ -62,7 +62,7 @@ hsvImageInput = cv2.cvtColor(imgImageInput, cv2.COLOR_BGR2HSV)
 
 # define range of yellow color in HSV
 lower_yellow = np.array([28,150,150])
-upper_yellow = np.array([32,255,255])
+upper_yellow = np.array([37,255,255])
 
 # Threshold the HSV image to get only yellow colors
 binary_mask = cv2.inRange(hsvImageInput, lower_yellow, upper_yellow)
