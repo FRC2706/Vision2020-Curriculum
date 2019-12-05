@@ -64,8 +64,9 @@ while (True):
 ## read file
     imgImageInput = cv2.imread(strImageInput)
 
-## display files
-    cv2.imshow(strImageInput, imgImageInput)
+## display half size original image
+    imgHalfInput = cv2.resize(imgImageInput, None, fx=0.5, fy=0.5, interpolation = cv2.INTER_AREA)
+    cv2.imshow(strImageInput, imgHalfInput)
 
 ## Convert BGR to HSV
     hsvImageInput = cv2.cvtColor(imgImageInput, cv2.COLOR_BGR2HSV)
@@ -144,8 +145,8 @@ while (True):
     print()
 
 ## display the masked images to screen
-    cv2.imshow('hsvImageInput', hsvImageInput)
-    cv2.imshow('binary_mask', binary_mask)
+#    cv2.imshow('hsvImageInput', hsvImageInput)
+#    cv2.imshow('binary_mask', binary_mask)
     cv2.imshow('yellow_masked', yellow_mask)
 
 ## loop for user input to close - loop indent 2
@@ -199,8 +200,8 @@ while (True):
 
 ## not exiting, close window before loading next
     cv2.destroyWindow(strImageInput)
-    cv2.destroyWindow('hsvImageInput')
-    cv2.destroyWindow('binary_mask')
+#    cv2.destroyWindow('hsvImageInput')
+#    cv2.destroyWindow('binary_mask')
     cv2.destroyWindow('yellow_masked')
 
 ## end of main loop indent 1
