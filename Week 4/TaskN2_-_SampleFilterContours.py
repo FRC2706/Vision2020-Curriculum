@@ -1,8 +1,11 @@
 # This is a pseudo code file for Merge Robotics, 2020, Infinite Recharge
-# This is task L2 - > Sample and Cycle Images in Folder. 
-# We are modifying the original K after going through some other exercises
-# To the cycling through a folder we will add switching some masking methods from
-# Task F and the display logic of Task D2.
+# This is task N - > Sample Filter Contours. 
+# Over the weeks, we have explored ways to understand Contours visualy and using
+# OpenCV functions.  Now lets put these to work and really get down to the 
+# challenge of finding FRC vision targets.  Basic idea is to loop through
+# sorted contours keeping desired contous only
+
+# let's use L2 as a starting point, copied it in here.
 
 # imports
 import numpy as np
