@@ -1,0 +1,18 @@
+# This is a pseudo code file for Merge Robotics, 2020, Infinite Recharge
+# This is task I - > OpenCV "Contours Continued."  Not sure if it is clear by now, 
+# but OpenCV can do a lot of things, we need to understand what it offers to complete 
+# our vision code.  For a given single contour, (meaning it was imaged and masked and 
+# converted to a coordinate array), you need to be able to use a number of OpenCV functions.
+# Please experiment with the following, easiest is to simply draw them back to a blank image
+# or on top of original.  Some very important OpenCV produced actions van only br
+# printed to the console or used in code to filter contours.
+
+# Continuing from last week - contour perimeter, contour approximation, bounding rectangles, 
+# minimum enclosing circle, fitting elipse, fitting line, aspect ratio
+# extent, solidity, equivalent diameter, orientation, points, min/max
+# mean color, extreme points
+
+# useful links
+# https://docs.opencv.org/3.4.7/dd/d49/tutorial_py_contour_features.html
+# https://docs.opencv.org/3.4.7/d1/d32/tutorial_py_contour_properties.html
+
