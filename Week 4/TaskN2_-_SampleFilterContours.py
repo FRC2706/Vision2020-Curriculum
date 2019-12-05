@@ -20,6 +20,7 @@ purple = (165, 0, 120)
 blue = (255, 0, 0)
 green = (0, 255, 255)
 red = (0, 0, 255)
+black = (0, 0, 0)
 
 # definitions of ...
 # from Merge ChickenVision 2019
@@ -31,7 +32,8 @@ def threshold_range(im, lo, hi):
 # select folder of interest
 posCodePath = Path(__file__).absolute()
 strVisionRoot = posCodePath.parent.parent
-strImageFolder = str(strVisionRoot / 'ProblemImages')
+#strImageFolder = str(strVisionRoot / 'ProblemImages')
+strImageFolder = str(strVisionRoot / 'CalibrationImages')
 print (strImageFolder)
 
 # read file names, and filter file names
@@ -66,6 +68,10 @@ while (True):
 
 ## read file
     imgImageInput = cv2.imread(strImageInput)
+
+## blank upper portion from Task K
+    intBinaryHeight,intBinaryWidth = imgImageInput.shape[:2]
+    cv2.rectangle(imgImageInput, (0,0), (intBinaryWidth, int(intBinaryHeight/2-10)), black, -1)
 
 ## display files
     cv2.imshow(strImageInput, imgImageInput)
