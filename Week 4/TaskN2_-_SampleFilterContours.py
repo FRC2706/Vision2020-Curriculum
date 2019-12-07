@@ -33,7 +33,8 @@ def threshold_range(im, lo, hi):
 posCodePath = Path(__file__).absolute()
 strVisionRoot = posCodePath.parent.parent
 #strImageFolder = str(strVisionRoot / 'ProblemImages')
-strImageFolder = str(strVisionRoot / 'CalibrationImages')
+#strImageFolder = str(strVisionRoot / 'CalibrationImages')
+strImageFolder = str(strVisionRoot / 'DistanceImages')
 print (strImageFolder)
 booBlankUpper = True
 
