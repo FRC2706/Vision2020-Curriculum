@@ -181,6 +181,16 @@ while (True):
             #### determine minimum area rectangle
             rectangle = cv2.minAreaRect(indiv)
             (xm,ym),(wm,hm), am = rectangle
+
+            #### search 'opencv minarearect widht height'
+            #### followed program creek link https://www.programcreek.com/python/example/89463/cv2.minAreaRect
+            #### scanned and noticed example 27 https://namkeenman.wordpress.com/2015/12/18/open-cv-determine-angle-of-rotatedrect-minarearect/
+            #### taking example 32
+            #if abs(am) > 45 or (abs(am) == 45 and wm < hm):
+            #    wm, hm = [hm, wm]
+            #    am = 90 + am
+
+            #### print to console
             print ('index=',j,'height=',hm,'width=',wm,'angle=',am,'minAreaAspect=',wm/hm)
 
             #### calculate extent as pre-filter suggesting not a cube
