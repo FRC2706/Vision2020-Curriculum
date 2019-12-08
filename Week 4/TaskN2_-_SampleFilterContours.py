@@ -18,7 +18,7 @@ import time
 # define colors
 purple = (165, 0, 120)
 blue = (255, 0, 0)
-green = (0, 255, 255)
+green = (0, 255, 0)
 red = (0, 0, 255)
 black = (0, 0, 0)
 
@@ -32,9 +32,9 @@ def threshold_range(im, lo, hi):
 # select folder of interest
 posCodePath = Path(__file__).absolute()
 strVisionRoot = posCodePath.parent.parent
-#strImageFolder = str(strVisionRoot / 'ProblemImages')
-#strImageFolder = str(strVisionRoot / 'CalibrationImages')
-strImageFolder = str(strVisionRoot / 'DistanceImages')
+strImageFolder = str(strVisionRoot / 'CalibrationImages') #review first
+#strImageFolder = str(strVisionRoot / 'ProblemImages') #discuss second, add extent filter
+#strImageFolder = str(strVisionRoot / 'DistanceImages') #introduce third
 print (strImageFolder)
 booBlankUpper = True
 
@@ -69,7 +69,7 @@ while (True):
 
     ## set image input to indexed list
     strImageInput = strImageFolder + '/' + photos[i]
-    print (i, ' ', strImageInput)
+    ##print (i, ' ', strImageInput)
 
     ## read file
     imgImageInput = cv2.imread(strImageInput)
@@ -164,12 +164,16 @@ while (True):
         areaSortedContours = sorted(contours, key = cv2.contourArea, reverse = True)[:5]
         print('Filtered to ', len(areaSortedContours), 'contours by area')
 
-        ###cv2.drawContours(imgContours, areaSortedContours, -1, purple, 10)
+        ### draw the top 5 contours in thin green
+        cv2.drawContours(imgContours, areaSortedContours, -1, green, 3)
 
         ### create a holder or array for contours we want to keep in first filter
-        heightSortedContours = []
+        tallestValidContour = []
+        tallestRectangle = []
         floMaximumHeight = 0.0
-        intIndexMaximumHeight = 1
+        floWidthAtMaxHeight = 0.0
+        floAngleAtMaxHeight = 0.0
+        intIndexMaximumHeight = -1
         
         ### loop through area sorted contours, j is index, indiv is single contour
         for (j, indiv) in enumerate(areaSortedContours):
@@ -177,28 +181,85 @@ while (True):
             #### determine minimum area rectangle
             rectangle = cv2.minAreaRect(indiv)
             (xm,ym),(wm,hm), am = rectangle
-            print ('index=',j,'height=',hm,'width=',wm)
+            print ('index=',j,'height=',hm,'width=',wm,'angle=',am,'minAreaAspect=',wm/hm)
 
-            #### track tallest contour
-            if hm > floMaximumHeight:
+            #### calculate extent as pre-filter suggesting not a cube
+            floContourMinAreaExtent = 1.0 # temp as teaching aid, remove and let 3 lines below work
+            #floRectangleArea = wm * hm
+            #floContourArea = cv2.contourArea(indiv)
+            #floContourMinAreaExtent = floContourArea / floRectangleArea 
+
+            #### track tallest contour that looks like a cube based on extent
+            if (hm > floMaximumHeight and floContourMinAreaExtent > 0.65):
                 floMaximumHeight = hm
+                floWidthAtMaxHeight = wm
+                floAngleAtMaxHeight = am
                 intIndexMaximumHeight = j
+                tallestRectangle = rectangle
 
-        ### approach 1
-        #cv2.drawContours(imgContours, areaSortedContours, intIndexMaximumHeight, purple, 10)
+        if intIndexMaximumHeight > -1: # 0 or higher means a valid tallest contour found
 
-        ### since we are chosing only 1 tallest, store it to filtered array
-        heightSortedContours.append(areaSortedContours[intIndexMaximumHeight])
+            #### add the contour # not working...
+            tallestValidContour.append(areaSortedContours[intIndexMaximumHeight])
 
-        ### approach 2
-        cv2.drawContours(imgContours, heightSortedContours, -1, purple, 10)
+            #### print tallest
+            print ('highest=',intIndexMaximumHeight,'height=',floMaximumHeight,'width=',floWidthAtMaxHeight,'angle=',floAngleAtMaxHeight)
+
+            #### print count of points in ellipse
+            print('there are', len(areaSortedContours[intIndexMaximumHeight]),'points in this contour')
+
+            #### calculate and draw the ellipse
+            if len(areaSortedContours[intIndexMaximumHeight]) > 4:
+                ellipse = cv2.fitEllipse(areaSortedContours[intIndexMaximumHeight])
+                cv2.ellipse(imgContours,ellipse,blue,1)
+
+            #### draw tallest min area rectange
+            box = cv2.boxPoints(tallestRectangle)
+            box = np.int0(box)
+            cv2.drawContours(imgContours,[box],-1,blue,2)
+
+            #### draw tallest contour, approach 1
+            #cv2.drawContours(imgContours, areaSortedContours, intIndexMaximumHeight, purple, 10)
+
+            #### draw tallest contour, approach 2
+            cv2.drawContours(imgContours, tallestValidContour, -1, purple, 7)
+
+            #### calculate and draw fitted line
+            rows,cols = imgContours.shape[:2]
+            [vx,vy,x,y] = cv2.fitLine(indiv, cv2.DIST_L2,0,0.01,0.01)
+            if abs(vx) < 0.001:
+                lefty = int(y)
+                righty = lefty
+                slope = 0.0
+            elif abs(vy) < 0.001:
+                lefty = int(y)
+                righty = lefty
+                slope = 100.0
+            else: 
+                lefty = int((-x*vy/vx) + y)
+                righty = int(((cols-x)*vy/vx)+y)
+                slope = -float(righty-lefty)/float(cols)
+            cv2.line(imgContours,(cols-1,righty),(0,lefty), green,1)
+            print('slope=',slope)
+
+        else:
+            print('no cubes found...')
+
+        ### repeating if statment but doing other business
+        if intIndexMaximumHeight > -1: # 0 or higher means a valid tallest contour found
+
+            #### use slope to adjust for multi-cube face on vs trailing away
+            pass
+
+
+
+
 
     ## calculate duration of processing as FPS...
     floDurationA = time.perf_counter() - floStartTimeA
     print ('A duration = ' + '{:.2f}'.format(floDurationA * 1000.0) + ' ms')
     print ('A frames per second = ' + '{:.1f}'.format(1.0 / floDurationA))
     print()
-
 
     ## display half size original image
     imgHalfInput = cv2.resize(imgImageInput, None, fx=0.5, fy=0.5, interpolation = cv2.INTER_AREA)
