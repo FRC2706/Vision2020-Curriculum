@@ -20,7 +20,12 @@ purple = (165, 0, 120)
 blue = (255, 0, 0)
 green = (0, 255, 0)
 red = (0, 0, 255)
+cyan = (252, 252, 3)
+magenta = (252, 3, 252)
+yellow = (3, 252, 252)
 black = (0, 0, 0)
+white = (255, 255, 255)
+orange = (3, 64, 252) 
 
 # definitions of ...
 # from Merge ChickenVision 2019
@@ -221,7 +226,7 @@ while (True):
             #cv2.drawContours(imgContours, areaSortedContours, intIndexMaximumHeight, purple, 10)
 
             #### draw tallest contour, approach 2
-            cv2.drawContours(imgContours, tallestValidContour, -1, purple, 7)
+            cv2.drawContours(imgContours, tallestValidContour, -1, orange, 7)
 
             #### calculate and draw fitted line
             rows,cols = imgContours.shape[:2]
