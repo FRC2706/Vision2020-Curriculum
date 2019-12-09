@@ -24,11 +24,17 @@ print("Using python version {0}".format(sys.version))
 print('OpenCV Version = ', cv2.__version__)
 print()
 
-# define colors for code readablility
+# define colors
 purple = (165, 0, 120)
 blue = (255, 0, 0)
 green = (0, 255, 0)
 red = (0, 0, 255)
+cyan = (252, 252, 3)
+magenta = (252, 3, 252)
+yellow = (3, 252, 252)
+black = (0, 0, 0)
+white = (255, 255, 255)
+orange = (3, 64, 252) 
 
 # ask pathlib for python code file path and determine root of repository
 posCodePath = Path(__file__).absolute()
@@ -37,7 +43,7 @@ strVisionRoot = posCodePath.parent.parent
 # print(strVisionRoot)
 
 # define a string variable for the path to the image file#
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube13.png')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube08.jpg')
 #strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-03.jpg')
 
 # load a color image using string
@@ -207,10 +213,10 @@ topmost = tuple(cnt[cnt[:,:,1].argmin()][0])
 bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
 # draw extreme points
 # from https://www.pyimagesearch.com/2016/04/11/finding-extreme-points-in-contours-with-opencv/
-cv2.circle(imgContours, leftmost, 12, (0, 0, 255), -1)
-cv2.circle(imgContours, rightmost, 12, (0, 255, 0), -1)
-cv2.circle(imgContours, topmost, 12, (255, 0, 0), -1)
-cv2.circle(imgContours, bottommost, 12, (255, 255, 0), -1)
+cv2.circle(imgContours, leftmost, 12, green, -1)
+cv2.circle(imgContours, rightmost, 12, red, -1)
+cv2.circle(imgContours, topmost, 12, white, -1)
+cv2.circle(imgContours, bottommost, 12, blue, -1)
 print('extreme points', leftmost,rightmost,topmost,bottommost)
 
 # Display the contours and maths generated

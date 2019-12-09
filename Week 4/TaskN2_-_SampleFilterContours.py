@@ -57,7 +57,7 @@ else:
 print (photos)
 
 # set index of files
-i = 0
+i = 8
 intLastFile = len(photos) -1
 
 # define maskmethod as interger variable
