@@ -182,31 +182,20 @@ while (True):
             rectangle = cv2.minAreaRect(indiv)
             (xm,ym),(wm,hm), am = rectangle
 
-            #### search 'opencv minarearect widht height'
-            #### followed program creek link https://www.programcreek.com/python/example/89463/cv2.minAreaRect
-            #### scanned and noticed example 27 https://namkeenman.wordpress.com/2015/12/18/open-cv-determine-angle-of-rotatedrect-minarearect/
-            #### taking example 32
-            #if abs(am) > 45 or (abs(am) == 45 and wm < hm):
-            #    wm, hm = [hm, wm]
-            #    am = 90 + am
-
             #### print to console
             print ('index=',j,'height=',hm,'width=',wm,'angle=',am,'minAreaAspect=',wm/hm)
 
-            #### calculate extent as pre-filter suggesting not a cube
-            floContourMinAreaExtent = 1.0 # temp as teaching aid, remove and let 3 lines below work
-            #floRectangleArea = wm * hm
-            #floContourArea = cv2.contourArea(indiv)
-            #floContourMinAreaExtent = floContourArea / floRectangleArea 
-
             #### track tallest contour that looks like a cube based on extent
-            if (hm > floMaximumHeight and floContourMinAreaExtent > 0.65):
+            if (hm > floMaximumHeight):
+                floMaxHtMinaX = xm
+                floMaxHtMinaY = ym
                 floMaximumHeight = hm
                 floWidthAtMaxHeight = wm
                 floAngleAtMaxHeight = am
                 intIndexMaximumHeight = j
                 tallestRectangle = rectangle
 
+        # taking the tallest contour, do some calculations for direction finding
         if intIndexMaximumHeight > -1: # 0 or higher means a valid tallest contour found
 
             #### add the contour # not working...
@@ -237,14 +226,15 @@ while (True):
             #### calculate and draw fitted line
             rows,cols = imgContours.shape[:2]
             [vx,vy,x,y] = cv2.fitLine(indiv, cv2.DIST_L2,0,0.01,0.01)
+            print('vx vy',vx, vy)
             if abs(vx) < 0.001:
                 lefty = int(y)
                 righty = lefty
-                slope = 0.0
+                slope = 1.0
             elif abs(vy) < 0.001:
                 lefty = int(y)
                 righty = lefty
-                slope = 100.0
+                slope = 0.0
             else: 
                 lefty = int((-x*vy/vx) + y)
                 righty = int(((cols-x)*vy/vx)+y)
@@ -254,16 +244,6 @@ while (True):
 
         else:
             print('no cubes found...')
-
-        ### repeating if statment but doing other business
-        if intIndexMaximumHeight > -1: # 0 or higher means a valid tallest contour found
-
-            #### use slope to adjust for multi-cube face on vs trailing away
-            pass
-
-
-
-
 
     ## calculate duration of processing as FPS...
     floDurationA = time.perf_counter() - floStartTimeA

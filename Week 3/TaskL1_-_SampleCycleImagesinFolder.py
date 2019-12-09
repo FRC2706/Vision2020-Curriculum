@@ -1,5 +1,5 @@
 # This is a pseudo code file for Merge Robotics, 2020, Infinite Recharge
-# This is task L - > Sample and Cycle Images in Folder. 
+# This is task L1 - > Sample and Cycle Images in Folder. 
 # We are going to continue towards our objective of a tool for season kickoff
 # This pseudo file is a reasonable attempt at cycling through a folder and 
 # displaying all the images (png or jpg only, our decision) navigating with up/down
