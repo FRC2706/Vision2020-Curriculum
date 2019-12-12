@@ -24,6 +24,10 @@ strVisionRoot = posCodePath.parent.parent
 
 # define a string variable for the path to the image file
 strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube09.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube02.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube06.jpg')
+strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube07.jpg')
+
 #strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-05.jpg')
 
 # load a color image using string

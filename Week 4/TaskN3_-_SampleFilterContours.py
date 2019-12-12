@@ -37,9 +37,10 @@ def threshold_range(im, lo, hi):
 # select folder of interest
 posCodePath = Path(__file__).absolute()
 strVisionRoot = posCodePath.parent.parent
-#strImageFolder = str(strVisionRoot / 'CalibrationImages') #review first
-#strImageFolder = str(strVisionRoot / 'ProblemImages') #discuss second, add extent filter
-strImageFolder = str(strVisionRoot / 'DistanceImages') #introduce third
+#strImageFolder = str(strVisionRoot / 'CalibrationImages') #review N1 first
+#strImageFolder = str(strVisionRoot / 'ProblemImages')
+#strImageFolder = str(strVisionRoot / 'DistanceImages') #introduce N2, this second 
+strImageFolder = str(strVisionRoot / '2706-Elimins-Images') #introduce third
 print (strImageFolder)
 booBlankUpper = True
 
@@ -57,7 +58,7 @@ else:
 print (photos)
 
 # set index of files
-i = 8
+i = 0
 intLastFile = len(photos) -1
 
 # define maskmethod as interger variable
@@ -187,11 +188,24 @@ while (True):
             rectangle = cv2.minAreaRect(indiv)
             (xm,ym),(wm,hm), am = rectangle
 
+            #### search 'opencv minarearect widht height'
+            #### followed program creek link https://www.programcreek.com/python/example/89463/cv2.minAreaRect
+            #### scanned and noticed example 27 https://namkeenman.wordpress.com/2015/12/18/open-cv-determine-angle-of-rotatedrect-minarearect/
+            #### taking example 32
+            if abs(am) > 45 or (abs(am) == 45 and wm < hm):
+                wm, hm = [hm, wm]
+                am = 90 + am
+
             #### print to console
             print ('index=',j,'height=',hm,'width=',wm,'angle=',am,'minAreaAspect=',wm/hm)
 
+            #### calculate extent as pre-filter suggesting not a cube
+            floRectangleArea = wm * hm
+            floContourArea = cv2.contourArea(indiv)
+            floContourMinAreaExtent = floContourArea / floRectangleArea 
+
             #### track tallest contour that looks like a cube based on extent
-            if (hm > floMaximumHeight):
+            if (hm > floMaximumHeight and floContourMinAreaExtent > 0.65):
                 floMaxHtMinaX = xm
                 floMaxHtMinaY = ym
                 floMaximumHeight = hm
@@ -222,9 +236,6 @@ while (True):
             box = np.int0(box)
             cv2.drawContours(imgContours,[box],-1,blue,2)
 
-            #### draw tallest contour, approach 1
-            #cv2.drawContours(imgContours, areaSortedContours, intIndexMaximumHeight, purple, 10)
-
             #### draw tallest contour, approach 2
             cv2.drawContours(imgContours, tallestValidContour, -1, orange, 7)
 
@@ -249,6 +260,66 @@ while (True):
 
         else:
             print('no cubes found...')
+
+        ### repeating if statment but target reconstruction
+        if intIndexMaximumHeight > -1: # 0 or higher means a valid tallest contour found
+
+            #### height carries through all possibilities
+            targetHeight = floMaximumHeight
+
+            #### a simple single cube defined by ascpect
+            aspect = floWidthAtMaxHeight / floMaximumHeight
+            if aspect < 1.7:
+                targetWidth = floWidthAtMaxHeight
+                M = cv2.moments((areaSortedContours[intIndexMaximumHeight]))
+                targetX = int(M['m10']/M['m00'])
+                targetY = int(M['m01']/M['m00'])
+
+            #### use slope to adjust for multi-cube face on vs trailing away
+            elif abs(slope) < 0.1: 
+                print('slope less than 0.1')
+                targetWidth = floWidthAtMaxHeight
+                M = cv2.moments((areaSortedContours[intIndexMaximumHeight]))
+                targetX = int(M['m10']/M['m00'])
+                targetY = int(M['m01']/M['m00'])
+
+            elif abs(slope) >= 0.1:
+                print('slope more than 0.1')
+                targetWidth = targetHeight * 1.55
+
+                cnt = (areaSortedContours[intIndexMaximumHeight])
+                if slope < 0: # start with lower right
+                    # extreme points
+                    rightmost = tuple(cnt[cnt[:,:,0].argmax()][0])
+                    topmost = tuple(cnt[cnt[:,:,1].argmin()][0])
+                    bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
+                    btmX, btmY = bottommost
+                    rgtX, rgtY = rightmost
+                    cv2.circle(imgContours, rightmost, 12, red, -1)
+                    cv2.circle(imgContours, bottommost, 12, purple, -1)
+                    #cv2.circle(imgContours, (rgtX,btmY), 12, cyan, -1)
+                    targetX = (rgtX - int(targetWidth/2.0))
+                    targetY = (btmY - int(targetHeight/2.0))
+
+                elif slope > 0: # start with lower left
+                    # extreme points
+                    leftmost = tuple(cnt[cnt[:,:,0].argmin()][0])
+                    topmost = tuple(cnt[cnt[:,:,1].argmin()][0])
+                    bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
+                    btmX, btmY = bottommost
+                    lftX, lftY = leftmost
+                    cv2.circle(imgContours, leftmost, 12, green, -1)
+                    cv2.circle(imgContours, bottommost, 12, purple, -1)
+                    #cv2.circle(imgContours, (lftX,btmY), 12, cyan, -1)
+                    targetX = (lftX + int(targetWidth/2.0))
+                    targetY = (btmY - int(targetHeight/2.0))
+
+            else:
+                pass
+
+            ### print target on screen            
+            cv2.circle(imgContours, (targetX,targetY), int(targetHeight/4), purple, 5, -1)
+
 
     ## calculate duration of processing as FPS...
     floDurationA = time.perf_counter() - floStartTimeA

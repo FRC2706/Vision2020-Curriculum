@@ -30,18 +30,7 @@ blue = (255, 0, 0)
 green = (0, 255, 0)
 red = (0, 0, 255)
 cyan = (252, 252, 3)
-magenta = (252, 3, 252)
-yellow = (3, 252, 252)
-black = (0, 0, 0)
-white = (255, 255, 255)
-orange = (3, 64, 252) 
-
-# ask pathlib for python code file path and determine root of repository
-posCodePath = Path(__file__).absolute()
-# print(posCodePath)
-strVisionRoot = posCodePath.parent.parent
-# print(strVisionRoot)
-
+strImageInput
 # define a string variable for the path to the image file#
 strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube08.jpg')
 #strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-03.jpg')
