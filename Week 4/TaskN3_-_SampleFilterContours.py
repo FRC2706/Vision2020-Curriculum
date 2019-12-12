@@ -196,13 +196,20 @@ while (True):
                 wm, hm = [hm, wm]
                 am = 90 + am
 
-            #### print to console
-            print ('index=',j,'height=',hm,'width=',wm,'angle=',am,'minAreaAspect=',wm/hm)
-
-            #### calculate extent as pre-filter suggesting not a cube
+            #### calculate extent as pre-filter suggesting not a cube, handle zero area
             floRectangleArea = wm * hm
             floContourArea = cv2.contourArea(indiv)
-            floContourMinAreaExtent = floContourArea / floRectangleArea 
+            if floRectangleArea != 0.0:
+                floContourMinAreaExtent = floContourArea / floRectangleArea 
+            else:
+                floContourMinAreaExtent = 0.0
+
+            #### print to console, but handle zero height / zero area
+            if (hm != 0.0 and floContourArea != 0.0):
+                print ('index=',j,'extent=','{:.2f}'.format(floContourMinAreaExtent),'height=','{:.1f}'.format(hm),'width=','{:.1f}'.format(wm),'angle=','{:.1f}'.format(am),'minAreaAspect=','{:.1f}'.format(wm/hm))
+            else:
+                print ('index=',j,'extent= zero','height=','{:.1f}'.format(0.0),'width=','{:.1f}'.format(wm),'angle=','{:.1f}'.format(am),'minAreaAspect= div by zero')                
+
 
             #### track tallest contour that looks like a cube based on extent
             if (hm > floMaximumHeight and floContourMinAreaExtent > 0.65):
@@ -221,7 +228,8 @@ while (True):
             tallestValidContour.append(areaSortedContours[intIndexMaximumHeight])
 
             #### print tallest
-            print ('highest=',intIndexMaximumHeight,'height=',floMaximumHeight,'width=',floWidthAtMaxHeight,'angle=',floAngleAtMaxHeight)
+            print('--==--')
+            print ('extent over 65 and highest=',intIndexMaximumHeight,'height=','{:.1f}'.format(floMaximumHeight),'width=','{:.1f}'.format(floWidthAtMaxHeight),'angle=','{:.1f}'.format(floAngleAtMaxHeight))
 
             #### print count of points in ellipse
             print('there are', len(areaSortedContours[intIndexMaximumHeight]),'points in this contour')
@@ -242,7 +250,7 @@ while (True):
             #### calculate and draw fitted line
             rows,cols = imgContours.shape[:2]
             [vx,vy,x,y] = cv2.fitLine(indiv, cv2.DIST_L2,0,0.01,0.01)
-            print('vx vy',vx, vy)
+            print('vx vy',(vx), (vy))
             if abs(vx) < 0.001:
                 lefty = int(y)
                 righty = lefty
@@ -256,7 +264,7 @@ while (True):
                 righty = int(((cols-x)*vy/vx)+y)
                 slope = -float(righty-lefty)/float(cols)
             cv2.line(imgContours,(cols-1,righty),(0,lefty), green,1)
-            print('slope=',slope)
+            print('slope=','{:.2f}'.format(slope))
 
         else:
             print('no cubes found...')
@@ -323,8 +331,8 @@ while (True):
 
     ## calculate duration of processing as FPS...
     floDurationA = time.perf_counter() - floStartTimeA
-    print ('A duration = ' + '{:.2f}'.format(floDurationA * 1000.0) + ' ms')
-    print ('A frames per second = ' + '{:.1f}'.format(1.0 / floDurationA))
+    print ('code duration estimate = ', '{:.2f}'.format(floDurationA * 1000.0) + ' ms')
+    print ('frames per second = ', '{:.1f}'.format(1.0 / floDurationA))
     print()
 
     ## display half size original image
