@@ -127,7 +127,7 @@ print('convexity is', cv2.isContourConvex(cnt))
 
 #straight bounding rectangle
 x,y,w,h = cv2.boundingRect(cnt)
-print('straight bouding rectangle =', (x,y), w,h)
+print('straight bounding rectangle =', (x,y), w,h)
 cv2.rectangle(imgShowMaths,(x,y),(x+w,y+h),green,2)
 print('bounding rectangle aspect = ', float(w)/h) #make sure w is floating and result is floating
 print('bounding rectangle extend = ', float(area)/(w*h))
@@ -202,10 +202,10 @@ topmost = tuple(cnt[cnt[:,:,1].argmin()][0])
 bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
 # draw extreme points
 # from https://www.pyimagesearch.com/2016/04/11/finding-extreme-points-in-contours-with-opencv/
-cv2.circle(imgShowMaths, leftmost, 12, (0, 0, 255), -1)
-cv2.circle(imgShowMaths, rightmost, 12, (0, 255, 0), -1)
-cv2.circle(imgShowMaths, topmost, 12, (255, 0, 0), -1)
-cv2.circle(imgShowMaths, bottommost, 12, (255, 255, 0), -1)
+cv2.circle(imgShowMaths, leftmost, 12, red, -1)
+cv2.circle(imgShowMaths, rightmost, 12, green, -1)
+cv2.circle(imgShowMaths, topmost, 12, (255, 255, 255), -1)
+cv2.circle(imgShowMaths, bottommost, 12, blue, -1)
 print('extreme points', leftmost,rightmost,topmost,bottommost)
 
 # Display the contours and maths generated

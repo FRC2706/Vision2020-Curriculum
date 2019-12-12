@@ -16,45 +16,22 @@ import sys
 from pathlib import Path
 import time #check how fast code is running
 
+black = (0, 0, 0)
+white = (255, 255, 255) 
+
 # Define string variable for path to file
-strImage = "/Users/rachellucyshyn/Documents/GitHub/Vision2020-Curriculum/CalibrationImages/Cube08.jpg"
+strImage = "/Users/rachellucyshyn/Documents/GitHub/Vision2020-Curriculum/CalibrationImages/Cube11.jpg"
 
 # load color image with string
 imgBGRInput = cv2.imread(strImage)
 
-# display color image to screen
-#cv2.imshow('Original Image', imgBGRInput) #window-title= what the window says at top
+
+intBinaryHeight,intBinaryWidth = imgBGRInput.shape[:2]
+cv2.rectangle(imgBGRInput, (0,0), (intBinaryWidth, int(intBinaryHeight/2-10)), black, -1)
 
 
-# mask image to only show yellow
-
-# Convert BGR to HSV
-imgHVSInput = cv2.cvtColor(imgBGRInput, cv2.COLOR_BGR2HSV)
-
-hue = imgHVSInput[:,:,0]
-sat = imgHVSInput[:,:,1]
-val = imgHVSInput[:,:,2]
-
-
-# Define range of colour in HSV (colour wheel- hue divide by 2 cause python is weird)
-lower_yellow = np.array([28,128,128]) #hue/saturation/value (how much black or white)
-upper_yellow = np.array([32,255,255]) # 255= zero black zero white
-
-# Threshold the HSV image to get only yellow colors
-imgBinaryMask = cv2.inRange(imgHVSInput, lower_yellow, upper_yellow)
-
-# Bitwise-AND mask and original image
-imgColorMask = cv2.bitwise_and(imgHVSInput,imgHVSInput, mask = imgBinaryMask) # frame = OG image
-
-
-# display masked images
-cv2.imshow('Rebecca',imgHVSInput)
-cv2.imshow('Binary Mask',imgBinaryMask)
-cv2.imshow('ColorMask',imgColorMask)
-    
-cv2.imshow('hue-title',hue)
-cv2.imshow('sat-title',sat)
-cv2.imshow('val-title',val)
+# display the color image to screen
+cv2.imshow('imgCutOff',imgBGRInput)
 
 
 # wait for user input to close

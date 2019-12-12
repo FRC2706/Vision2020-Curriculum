@@ -4,3 +4,13 @@
 # OpenCV functions.  Now lets put these to work and really get down to the 
 # challenge of finding FRC vision targets.  Basic idea is to loop through
 # sorted contours keeping desired contous only
+
+# use task G
+#bigger range (40)
+
+#find closest cube by height
+heightSortedContours = []
+floMaximumHeight = 0.0
+intIndexMaximumHeight = 1
+
+# loop through sorted contours
