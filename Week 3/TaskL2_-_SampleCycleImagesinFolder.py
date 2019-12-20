@@ -28,7 +28,7 @@ def threshold_range(im, lo, hi):
 # select folder of interest
 posCodePath = Path(__file__).absolute()
 strVisionRoot = posCodePath.parent.parent
-strImageFolder = str(strVisionRoot / 'ProblemImages')
+strImageFolder = str(strVisionRoot / '2706-Elimins-Images')
 print (strImageFolder)
 
 # read file names, and filter file names
@@ -53,7 +53,6 @@ intMaskMethod = 0
 print()
 print('Mask Method s = Simple In-Range')
 
-
 # begin main loop indent 1
 while (True):
 
@@ -73,7 +72,7 @@ while (True):
 
 ### define range of yellow color in HSV
     lower_yellow = np.array([28,150,150])
-    upper_yellow = np.array([40,255,255])
+    upper_yellow = np.array([32,255,255])
 
 ## Depending upon mask method create binary and yellow mask
     if intMaskMethod == 0:

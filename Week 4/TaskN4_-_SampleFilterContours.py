@@ -27,6 +27,9 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 orange = (3, 64, 252) 
 
+floMinExtent = 0.49
+floMinArea = 0
+
 # definitions of ...
 # from Merge ChickenVision 2019
 def threshold_range(im, lo, hi):
@@ -62,7 +65,7 @@ i = 0
 intLastFile = len(photos) -1
 
 # define maskmethod as interger variable
-intMaskMethod = 0
+intMaskMethod = 2
 print()
 print('Mask Method s = Simple In-Range')
 
@@ -89,8 +92,11 @@ while (True):
     hsvImageInput = cv2.cvtColor(imgImageInput, cv2.COLOR_BGR2HSV)
 
     ## define range of yellow color in HSV
-    lower_yellow = np.array([28,150,150])
-    upper_yellow = np.array([32,255,255])
+    #lower_yellow = np.array([28,150,150])
+    #upper_yellow = np.array([40,255,255])
+
+    lower_yellow = np.array([22,105,145]) #28,150,150
+    upper_yellow = np.array([36,255,255]) #32,255,255
 
     ## Depending upon mask method create binary and yellow mask
     if intMaskMethod == 0:
@@ -170,8 +176,8 @@ while (True):
         areaSortedContours = sorted(contours, key = cv2.contourArea, reverse = True)[:5]
         print('Filtered to ', len(areaSortedContours), 'contours by area')
 
-        ### draw the top 5 contours in thin green
-        cv2.drawContours(imgContours, areaSortedContours, -1, green, 3)
+        ### draw the top 5 contours in thin cyan
+        cv2.drawContours(imgContours, areaSortedContours, -1, cyan, 2)
 
         ### create a holder or array for contours we want to keep in first filter
         tallestValidContour = []
@@ -206,13 +212,13 @@ while (True):
 
             #### print to console, but handle zero height / zero area
             if (hm != 0.0 and floContourArea != 0.0):
-                print ('index=',j,'extent=','{:.2f}'.format(floContourMinAreaExtent),'height=','{:.1f}'.format(hm),'width=','{:.1f}'.format(wm),'angle=','{:.1f}'.format(am),'minAreaAspect=','{:.1f}'.format(wm/hm))
+                print ('index=',j,'area=',(floContourArea),'extent=','{:.2f}'.format(floContourMinAreaExtent),'height=','{:.1f}'.format(hm),'width=','{:.1f}'.format(wm),'angle=','{:.1f}'.format(am),'minAreaAspect=','{:.1f}'.format(wm/hm))
             else:
                 print ('index=',j,'extent= zero','height=','{:.1f}'.format(0.0),'width=','{:.1f}'.format(wm),'angle=','{:.1f}'.format(am),'minAreaAspect= div by zero')                
 
 
             #### track tallest contour that looks like a cube based on extent
-            if (hm > floMaximumHeight and floContourMinAreaExtent > 0.65):
+            if (hm > floMaximumHeight and floContourMinAreaExtent > floMinExtent):
                 floMaxHtMinaX = xm
                 floMaxHtMinaY = ym
                 floMaximumHeight = hm
@@ -229,15 +235,15 @@ while (True):
 
             #### print tallest
             print('--==--')
-            print ('extent over 65 and highest=',intIndexMaximumHeight,'height=','{:.1f}'.format(floMaximumHeight),'width=','{:.1f}'.format(floWidthAtMaxHeight),'angle=','{:.1f}'.format(floAngleAtMaxHeight))
+            print ('extent over', floMinExtent, 'and highest=',intIndexMaximumHeight,'height=','{:.1f}'.format(floMaximumHeight),'width=','{:.1f}'.format(floWidthAtMaxHeight),'angle=','{:.1f}'.format(floAngleAtMaxHeight))
 
             #### print count of points in ellipse
             print('there are', len(areaSortedContours[intIndexMaximumHeight]),'points in this contour')
 
-            #### calculate and draw the ellipse
+            #### calculate the ellipse
             if len(areaSortedContours[intIndexMaximumHeight]) > 4:
                 ellipse = cv2.fitEllipse(areaSortedContours[intIndexMaximumHeight])
-                cv2.ellipse(imgContours,ellipse,blue,1)
+                #cv2.ellipse(imgContours,ellipse,blue,1)
 
             #### draw tallest min area rectange
             box = cv2.boxPoints(tallestRectangle)
@@ -245,7 +251,7 @@ while (True):
             cv2.drawContours(imgContours,[box],-1,blue,2)
 
             #### draw tallest contour, approach 2
-            cv2.drawContours(imgContours, tallestValidContour, -1, orange, 7)
+            cv2.drawContours(imgContours, tallestValidContour, -1, orange, 3)
 
             #### calculate and draw fitted line
             rows,cols = imgContours.shape[:2]
@@ -265,6 +271,11 @@ while (True):
                 slope = -float(righty-lefty)/float(cols)
             cv2.line(imgContours,(cols-1,righty),(0,lefty), green,1)
             print('slope=','{:.2f}'.format(slope))
+
+            #### draw the ellipse
+            if len(areaSortedContours[intIndexMaximumHeight]) > 4:
+                #ellipse = cv2.fitEllipse(areaSortedContours[intIndexMaximumHeight])
+                cv2.ellipse(imgContours,ellipse,blue,1)
 
         else:
             print('no cubes found...')
@@ -303,8 +314,8 @@ while (True):
                     bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
                     btmX, btmY = bottommost
                     rgtX, rgtY = rightmost
-                    cv2.circle(imgContours, rightmost, 12, red, -1)
-                    cv2.circle(imgContours, bottommost, 12, purple, -1)
+                    cv2.circle(imgContours, rightmost, 6, red, -1)
+                    cv2.circle(imgContours, bottommost, 6, blue, -1)
                     #cv2.circle(imgContours, (rgtX,btmY), 12, cyan, -1)
                     targetX = (rgtX - int(targetWidth/2.0))
                     targetY = (btmY - int(targetHeight/2.0))
@@ -316,8 +327,8 @@ while (True):
                     bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
                     btmX, btmY = bottommost
                     lftX, lftY = leftmost
-                    cv2.circle(imgContours, leftmost, 12, green, -1)
-                    cv2.circle(imgContours, bottommost, 12, purple, -1)
+                    cv2.circle(imgContours, leftmost, 6, green, -1)
+                    cv2.circle(imgContours, bottommost, 6, blue, -1)
                     #cv2.circle(imgContours, (lftX,btmY), 12, cyan, -1)
                     targetX = (lftX + int(targetWidth/2.0))
                     targetY = (btmY - int(targetHeight/2.0))
@@ -326,7 +337,8 @@ while (True):
                 pass
 
             ### print target on screen            
-            cv2.circle(imgContours, (targetX,targetY), int(targetHeight/4), purple, 5, -1)
+            cv2.circle(imgContours, (targetX,targetY), int(targetHeight/4), purple, 4, -1)
+            cv2.circle(imgImageInput, (targetX,targetY), int(targetHeight/4), purple, 4, -1)
 
 
     ## calculate duration of processing as FPS...
@@ -335,12 +347,15 @@ while (True):
     print ('frames per second = ', '{:.1f}'.format(1.0 / floDurationA))
     print()
 
-    ## display half size original image
-    imgHalfInput = cv2.resize(imgImageInput, None, fx=0.5, fy=0.5, interpolation = cv2.INTER_AREA)
-    cv2.imshow(photos[i], imgHalfInput)
+    ## display double size original image
+    imgDoubleInput = cv2.resize(imgImageInput, None, fx=2.0, fy=2.0, interpolation = cv2.INTER_AREA)
+    cv2.imshow(photos[i], imgDoubleInput)
+    cv2.moveWindow(photos[i],100,50)
 
-    ## show result over color mask
-    cv2.imshow('contours over yellow mask', imgContours)
+    ## show result over color mask at double size
+    imgDoubleHSV = cv2.resize(imgContours, None, fx=2.0, fy=2.0, interpolation = cv2.INTER_AREA)
+    cv2.imshow('contours over yellow mask', imgDoubleHSV)
+    cv2.moveWindow('contours over yellow mask',500,50)
 
     ## loop for user input to close - loop indent 2
     booReqToExit = False # true when user wants to exit
