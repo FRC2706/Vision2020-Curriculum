@@ -5,7 +5,7 @@
 # challenge of finding FRC vision targets.  Basic idea is to loop through
 # sorted contours keeping desired contous only
 
-# let's use L2 as a starting point, copied it in here.
+# let's use L4 as a starting point, copied it in here.
 
 # imports
 import numpy as np
@@ -29,8 +29,9 @@ white = (255, 255, 255)
 orange = (3, 64, 252) 
 
 # define constraints
-floMinExtent = 0.40
-floMinArea = 0
+floMinExtent = 0.5
+floMinArea = 400.0
+floImageMultiplier = 3.0
 
 # definitions of ...
 # from Merge ChickenVision 2019
@@ -68,14 +69,57 @@ def get_ellipse_minor(center, size, angle):
 
     return (ShortAxis0X, ShortAxis0Y, ShortAxis1X, ShortAxis1Y)
 
+# improved ellipse handling from http://raphael.candelier.fr/?blog=Image%20Moments
+def get_ellipse(targetEllipse, targetMoments):
+
+    te = targetEllipse
+    tm = targetMoments
+
+    # centroid
+    cx = tm['m10']/tm['m00']
+    cy = tm['m01']/tm['m00']
+
+    # Central moments (intermediary step)
+    a = tm['m20']/tm['m00'] - cx**2
+    b = 2*(tm['m11']/tm['m00'] - cx*cy)
+    c = tm['m02']/tm['m00'] - cy**2
+
+    # Orientation (in radians)
+    theta = 1/2*math.atan(b/(a-c)) + (a<c)*math.pi/2
+
+    #Minor and major axis
+    ew = math.sqrt(8*(a+c-math.sqrt(b**2+(a-c)**2)))/2
+    el = math.sqrt(8*(a+c+math.sqrt(b**2+(a-c)**2)))/2
+
+    # Ellipse focal points
+    ed = math.sqrt(el**2-ew**2)
+    efx1 = cx + ed*math.cos(theta)
+    efy1 = cy + ed*math.sin(theta)
+    efx2 = cx - ed*math.cos(theta)
+    efy2 = cy - ed*math.sin(theta)
+
+    return (int(efx1), int(efy1), int(efx2), int(efy2))
+
+# from https://stackoverflow.com/questions/41462419/python-slope-given-two-points-find-the-slope-answer-works-doesnt-work/41462583
+def get_slope(x1, y1, x2, y2):
+    return (y2-y1)/(x2-x1) 
+
+# homemade! http://home.windstream.net/okrebs/Ch9-1.gif
+def get_opposit(hyp, theta):
+    return hyp*math.sin(math.radians(theta))
+
+# homemade! http://home.windstream.net/okrebs/Ch9-1.gif
+def get_adjacent(hyp, theta):
+    return abs(hyp*math.cos(math.radians(theta)))
+
 # select folder of interest
 posCodePath = Path(__file__).absolute()
 strVisionRoot = posCodePath.parent.parent
 #strImageFolder = str(strVisionRoot / 'CalibrationImages')
 #strImageFolder = str(strVisionRoot / 'ProblemImages')
 #strImageFolder = str(strVisionRoot / 'DistanceImages') 
-#strImageFolder = str(strVisionRoot / '2706-Elimins-Images')
-strImageFolder = str(strVisionRoot / 'EllipseImages')
+strImageFolder = str(strVisionRoot / '2706-Elimins-Images')
+#strImageFolder = str(strVisionRoot / 'EllipseImages')
 
 print (strImageFolder)
 booBlankUpper = True
@@ -199,6 +243,7 @@ while (True):
     intInitialContoursFound = len(contours)
     print (photos[i])
     print('Found', intInitialContoursFound, 'initial contours')
+    print('--==--')
 
     ## add loop to display each contour
     imgContours = yellow_mask.copy()
@@ -206,10 +251,18 @@ while (True):
     if intInitialContoursFound:
         
         ### sort contours by area, keep only largest
-        areaSortedContours = sorted(contours, key = cv2.contourArea, reverse = True)[:5]
+        initialSortedContours = sorted(contours, key = cv2.contourArea, reverse = True)[:5]
+
+        ### filter contours by area, keeping only those over floMinArea
+        areaSortedContours = []
+
+        for (j, indiv) in enumerate(initialSortedContours):
+            if cv2.contourArea(indiv) > floMinArea:
+                areaSortedContours.append(indiv)
+
         print('Filtered to ', len(areaSortedContours), 'contours by area')
 
-        ### draw the top 5 contours in thin cyan
+        ### draw the valid contours in thin cyan
         cv2.drawContours(imgContours, areaSortedContours, -1, cyan, 2)
 
         ### create a holder or array for contours we want to keep in first filter
@@ -227,13 +280,24 @@ while (True):
             rectangle = cv2.minAreaRect(indiv)
             (xm,ym),(wm,hm), am = rectangle
 
-            #### search 'opencv minarearect widht height'
-            #### followed program creek link https://www.programcreek.com/python/example/89463/cv2.minAreaRect
-            #### scanned and noticed example 27 https://namkeenman.wordpress.com/2015/12/18/open-cv-determine-angle-of-rotatedrect-minarearect/
-            #### taking example 32
-            if abs(am) > 45 or (abs(am) == 45 and wm < hm):
+            #### search 'opencv minarearect widht height' and other
+            #### program creek link https://www.programcreek.com/python/example/89463/cv2.minAreaRect
+            #### noticed https://namkeenman.wordpress.com/2015/12/18/open-cv-determine-angle-of-rotatedrect-minarearect/
+            #### this is not really working...
+            #### if abs(am) > 45 or (abs(am) == 45 and wm < hm):
+            ####     wm, hm = [hm, wm]
+            ####     am = 90 + am
+
+            #### more research https://stackoverflow.com/questions/15956124/minarearect-angles-unsure-about-the-angle-returned
+
+            if hm > wm:
+                am = am + 90
                 wm, hm = [hm, wm]
-                am = 90 + am
+            else:
+                am = am + 180
+
+            if am == 180:
+                am = 0
 
             #### calculate extent as pre-filter suggesting not a cube, handle zero area
             floRectangleArea = wm * hm
@@ -258,64 +322,86 @@ while (True):
                 floAngleAtMaxHeight = am
                 intIndexMaximumHeight = j
                 tallestRectangle = rectangle
+                
 
         # taking the tallest contour, do some calculations for direction finding
         if intIndexMaximumHeight > -1: # 0 or higher means a valid tallest contour found
 
-            #### add the contour # not working...
+            #### add the contour # not really working...
             tallestValidContour.append(areaSortedContours[intIndexMaximumHeight])
 
             #### print tallest
-            print('--==--')
             print ('extent over', floMinExtent, 'and highest=',intIndexMaximumHeight,'height=','{:.1f}'.format(floMaximumHeight),'width=','{:.1f}'.format(floWidthAtMaxHeight),'angle=','{:.1f}'.format(floAngleAtMaxHeight))
 
-            #### print count of points in ellipse
-            print('there are', len(areaSortedContours[intIndexMaximumHeight]),'points in this contour')
-
-            #### calculate the ellipse, draw later
-            if len(areaSortedContours[intIndexMaximumHeight]) > 4:
-                ellipse = cv2.fitEllipse(areaSortedContours[intIndexMaximumHeight])
+            #### print count of points in contour
+            print('there are', len(tallestValidContour[0]),'points in this contour')
+            # areaSortedContours[intIndexMaximumHeight]
 
             #### draw tallest min area rectange
             box = cv2.boxPoints(tallestRectangle)
             box = np.int0(box)
             cv2.drawContours(imgContours,[box],-1,blue,2)
 
+            #### calculate the dimensions to the center of the short sides
+            opp = get_opposit(floWidthAtMaxHeight/2.0, floAngleAtMaxHeight)
+            adj = get_adjacent(floMaximumHeight/2.0, floAngleAtMaxHeight)
+
+            #print('opp=',opp, 'adj=',adj)
+
+            #### cv2.line to mark x at center of minAreaRect (begin coords, end coords, color, width)
+            #cv2.line(imgContours,(int(floMaxHtMinaX)-50,int(floMaxHtMinaY)-50),(int(floMaxHtMinaX)+50,int(floMaxHtMinaY)+50),green,2)
+            #cv2.line(imgContours,(int(floMaxHtMinaX)-50,int(floMaxHtMinaY)+50),(int(floMaxHtMinaX)+50,int(floMaxHtMinaY)-50),green,2)
+
+            #print('xc=',floMaxHtMinaX, 'yc=',floMaxHtMinaY, 'hm=',floMaximumHeight, 'wm=',floWidthAtMaxHeight)
+            #print('angle=',floAngleAtMaxHeight)
+            #### calculate slope of major axis of minAreaRect, and display
+            if floAngleAtMaxHeight < 90:
+                #print('x1=',floMaxHtMinaX-adj,'y1=', floMaxHtMinaY-opp,'x2=',floMaxHtMinaX+adj,'y2=',floMaxHtMinaY+opp)
+                slope = get_slope(floMaxHtMinaX-adj, floMaxHtMinaY-opp, floMaxHtMinaX+adj, floMaxHtMinaY+opp)
+                cv2.line(imgContours,(int(floMaxHtMinaX-adj), int(floMaxHtMinaY-opp)), (int(floMaxHtMinaX+adj), int(floMaxHtMinaY+opp)), blue, 5)
+            elif floAngleAtMaxHeight > 90:
+                #print('x1=',floMaxHtMinaX-adj,'y1=', floMaxHtMinaY+opp,'x2=',floMaxHtMinaX+adj,'y22=',floMaxHtMinaY-opp)
+                slope = get_slope(floMaxHtMinaX-adj, floMaxHtMinaY+opp, floMaxHtMinaX+adj, floMaxHtMinaY-opp)
+                cv2.line(imgContours,(int(floMaxHtMinaX-adj), int(floMaxHtMinaY+opp)), (int(floMaxHtMinaX+adj), int(floMaxHtMinaY-opp)), blue, 5)
+            else: # implies angle is 90
+                #print('x1=',floMaxHtMinaX-adj,'y1=', floMaxHtMinaY+opp,'x2=',floMaxHtMinaX+adj,'y22=',floMaxHtMinaY-opp)
+                slope = 100
+                cv2.line(imgContours,(int(floMaxHtMinaX-adj), int(floMaxHtMinaY+opp)), (int(floMaxHtMinaX+adj), int(floMaxHtMinaY-opp)), blue, 5)
+
+            print('minARect slope=',slope)
+
             #### draw tallest contour, approach 2
             cv2.drawContours(imgContours, tallestValidContour, -1, orange, 3)
 
-            #### calculate and draw fitted line
-            rows,cols = imgContours.shape[:2]
-            [vx,vy,x,y] = cv2.fitLine(indiv, cv2.DIST_L2,0,0.01,0.01)
-            print('vx vy',(vx), (vy))
-            if abs(vx) < 0.001:
-                lefty = int(y)
-                righty = lefty
-                slope = 1.0
-            elif abs(vy) < 0.001:
-                lefty = int(y)
-                righty = lefty
-                slope = 0.0
-            else: 
-                lefty = int((-x*vy/vx) + y)
-                righty = int(((cols-x)*vy/vx)+y)
-                slope = -float(righty-lefty)/float(cols)
-            cv2.line(imgContours,(cols-1,righty),(0,lefty), green,1)
-            print('line slope=','{:.2f}'.format(slope))
-
-            #### draw the ellipse and major axis
+            #### calculate the moments and use in various cases
+            M = cv2.moments((areaSortedContours[intIndexMaximumHeight]))
+            
+            #### need to make sure contour will not break ellipse function
             if len(areaSortedContours[intIndexMaximumHeight]) > 4:
-                cv2.ellipse(imgContours,ellipse,blue,2)
-                print(ellipse)
-                ellcent, ellaxe, ellang = ellipse
-                maja0x, maja0Y, maja1x, maja1y = get_ellipse_major(ellcent, ellaxe, ellang)
-                cv2.line(imgContours,(maja0x, maja0Y),(maja1x, maja1y),red,2)
+                ##### calculate the ellipse and draw
+                ellipse = cv2.fitEllipse(areaSortedContours[intIndexMaximumHeight])
+                #print(ellipse)
+                cv2.ellipse(imgContours, ellipse ,blue ,3)
+
+                ##### found fancier ellipse function here http://raphael.candelier.fr/?blog=Image%20Moments
+                efx1, efy1, efx2, efy2 = get_ellipse(ellipse, M)
+                #print (efx1, efy1, efx2, efy2)
+                cv2.line(imgContours,(efx1, efy1),(efx2, efy2),blue,3)
+
+                ##### calculate slope of major axis from ellipse
+                slope = get_slope(efx1, efy1, efx2, efy2)
+                print('ellipse slope=',slope)
+
+                #ellcent, ellaxe, ellang = ellipse
+                #maja0x, maja0Y, maja1x, maja1y = get_ellipse_major(ellcent, ellaxe, ellang)
+                #cv2.line(imgContours,(maja0x, maja0Y),(maja1x, maja1y),red,3)
 
         else:
             print('no cubes found...')
 
         ### repeating if statment but target reconstruction
-        if intIndexMaximumHeight > -1: # 0 or higher means a valid tallest contour found
+        #if intIndexMaximumHeight > -1: # 0 or higher means a valid tallest contour found
+        if tallestValidContour:
 
             #### height carries through all possibilities
             targetHeight = floMaximumHeight
@@ -323,25 +409,27 @@ while (True):
             #### a simple single cube defined by ascpect
             aspect = floWidthAtMaxHeight / floMaximumHeight
             if aspect < 1.7:
+                print('single cube, aspect less than 1.7')
                 targetWidth = floWidthAtMaxHeight
-                M = cv2.moments((areaSortedContours[intIndexMaximumHeight]))
                 targetX = int(M['m10']/M['m00'])
                 targetY = int(M['m01']/M['m00'])
 
             #### use slope to adjust for multi-cube face on vs trailing away
             elif abs(slope) < 0.1: 
-                print('slope less than 0.1')
+                print('multi cube, slope less than 0.1')
                 targetWidth = floWidthAtMaxHeight
-                M = cv2.moments((areaSortedContours[intIndexMaximumHeight]))
+                #M = cv2.moments((areaSortedContours[intIndexMaximumHeight]))
                 targetX = int(M['m10']/M['m00'])
                 targetY = int(M['m01']/M['m00'])
 
             elif abs(slope) >= 0.1:
-                print('slope more than 0.1')
+                print('multi cube, slope more than 0.1')
                 targetWidth = targetHeight * 1.55
 
-                cnt = (areaSortedContours[intIndexMaximumHeight])
-                if slope < 0: # start with lower right
+                #cnt = (areaSortedContours[intIndexMaximumHeight])
+                cnt = tallestValidContour[0]
+                if slope > 0: # start with lower right
+                    print('fade to the left')
                     # extreme points
                     rightmost = tuple(cnt[cnt[:,:,0].argmax()][0])
                     topmost = tuple(cnt[cnt[:,:,1].argmin()][0])
@@ -354,7 +442,8 @@ while (True):
                     targetX = (rgtX - int(targetWidth/2.0))
                     targetY = (btmY - int(targetHeight/2.0))
 
-                elif slope > 0: # start with lower left
+                elif slope < 0: # start with lower left
+                    print('fade to the right')
                     # extreme points
                     leftmost = tuple(cnt[cnt[:,:,0].argmin()][0])
                     topmost = tuple(cnt[cnt[:,:,1].argmin()][0])
@@ -376,19 +465,20 @@ while (True):
 
 
     ## calculate duration of processing as FPS...
+    print('--==--')
     floDurationA = time.perf_counter() - floStartTimeA
     print ('code duration estimate = ', '{:.2f}'.format(floDurationA * 1000.0) + ' ms')
     print ('frames per second = ', '{:.1f}'.format(1.0 / floDurationA))
     print()
 
-    ## display double size original image
-    imgDoubleInput = cv2.resize(imgImageInput, None, fx=0.5, fy=0.5, interpolation = cv2.INTER_AREA)
-    cv2.imshow(photos[i], imgDoubleInput)
+    ## display modified size original image
+    imgShowInput = cv2.resize(imgImageInput, None, fx=floImageMultiplier, fy=floImageMultiplier, interpolation = cv2.INTER_AREA)
+    cv2.imshow(photos[i], imgShowInput)
     cv2.moveWindow(photos[i],100,50)
 
     ## show result over color mask at double size
-    imgDoubleHSV = cv2.resize(imgContours, None, fx=0.5, fy=0.5, interpolation = cv2.INTER_AREA)
-    cv2.imshow('contours over yellow mask', imgDoubleHSV)
+    imgShowHSV = cv2.resize(imgContours, None, fx=floImageMultiplier, fy=floImageMultiplier, interpolation = cv2.INTER_AREA)
+    cv2.imshow('contours over yellow mask', imgShowHSV)
     cv2.moveWindow('contours over yellow mask',600,50)
 
     ## loop for user input to close - loop indent 2
