@@ -27,8 +27,10 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 orange = (3, 64, 252) 
 
+# define constraints
 floMinExtent = 0.49
 floMinArea = 0
+floImageMultiplier = 3.0
 
 # definitions of ...
 # from Merge ChickenVision 2019
@@ -347,15 +349,15 @@ while (True):
     print ('frames per second = ', '{:.1f}'.format(1.0 / floDurationA))
     print()
 
-    ## display double size original image
-    imgDoubleInput = cv2.resize(imgImageInput, None, fx=2.0, fy=2.0, interpolation = cv2.INTER_AREA)
-    cv2.imshow(photos[i], imgDoubleInput)
+    ## display modified size original image
+    imgShowInput = cv2.resize(imgImageInput, None, fx=floImageMultiplier, fy=floImageMultiplier, interpolation = cv2.INTER_AREA)
+    cv2.imshow(photos[i], imgShowInput)
     cv2.moveWindow(photos[i],100,50)
 
-    ## show result over color mask at double size
-    imgDoubleHSV = cv2.resize(imgContours, None, fx=2.0, fy=2.0, interpolation = cv2.INTER_AREA)
-    cv2.imshow('contours over yellow mask', imgDoubleHSV)
-    cv2.moveWindow('contours over yellow mask',500,50)
+    ## show result over color mask at modified size
+    imgShowHSV = cv2.resize(imgContours, None, fx=floImageMultiplier, fy=floImageMultiplier, interpolation = cv2.INTER_AREA)
+    cv2.imshow('contours over yellow mask', imgShowHSV)
+    cv2.moveWindow('contours over yellow mask',600,50)
 
     ## loop for user input to close - loop indent 2
     booReqToExit = False # true when user wants to exit

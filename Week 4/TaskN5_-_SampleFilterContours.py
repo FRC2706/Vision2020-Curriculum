@@ -476,7 +476,7 @@ while (True):
     cv2.imshow(photos[i], imgShowInput)
     cv2.moveWindow(photos[i],100,50)
 
-    ## show result over color mask at double size
+    ## show result over color mask at modified size
     imgShowHSV = cv2.resize(imgContours, None, fx=floImageMultiplier, fy=floImageMultiplier, interpolation = cv2.INTER_AREA)
     cv2.imshow('contours over yellow mask', imgShowHSV)
     cv2.moveWindow('contours over yellow mask',600,50)
