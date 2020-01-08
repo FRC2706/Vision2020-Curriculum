@@ -28,7 +28,7 @@ def threshold_range(im, lo, hi):
 # select folder of interest
 posCodePath = Path(__file__).absolute()
 strVisionRoot = posCodePath.parent.parent
-strImageFolder = str(strVisionRoot / '2706-Elimins-Images')
+strImageFolder = str(strVisionRoot / 'DistanceImages')
 print (strImageFolder)
 
 # read file names, and filter file names
