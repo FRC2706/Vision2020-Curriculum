@@ -30,9 +30,13 @@ blue = (255, 0, 0)
 green = (0, 255, 0)
 red = (0, 0, 255)
 cyan = (252, 252, 3)
-strImageInput
+white = (255, 255, 255)
+
+strVisionRoot = str(Path(__file__).parent.parent)
+#print (strVisionRoot)
+
 # define a string variable for the path to the image file#
-strImageInput = str(strVisionRoot / 'CalibrationImages' / 'Cube08.jpg')
+strImageInput = strVisionRoot + '/CalibrationImages/Cube08.jpg'
 #strImageInput = str(strVisionRoot / 'ProblemImages' / 'test-03.jpg')
 
 # load a color image using string
