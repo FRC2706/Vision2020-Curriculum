@@ -1,29 +1,14 @@
-# This is a python code file for Merge Robotics, 2020, Infinite Recharge
-# This is task D1 - > Load and Display Images
-# Using Python and OpenCV, write a small bit of code to load an image and display it on your screen.
-# Recommeded starting points -> https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html
-# Pseudo code to do this is below
-# Link to tutorial code found -> https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_gui/py_image_display/py_image_display.html#sum-it-up
-
-# Imports!
-# modules of code as required (OpenCV here)
-
 import numpy as np
 import cv2
-from pathlib import Path
+MyImage = r"C:\Users\spice\Downloads\Robotics\Vision2020-Curriculum\Week 1\Cube01.jpg"
+img = cv2.imread(MyImage,1)
+print(img)
+cv2.imshow('image',img)
+k = cv2.waitKey(0) & 0xFF
 
-# define a string variable for the path to the file
-strImageInput = str(Path(__file__).parent.parent / 'CalibrationImages' / 'Cube01.jpg')
-
-# load a color image using string variable
-imgImageInput = cv2.imread(strImageInput)
-
-# display the color image to screen
-cv2.imshow('image-windows-title-bar',imgImageInput)
-
-# wait for user input to close
-k = cv2.waitKey(0)
-
-# cleanup and exit
-cv2.destroyAllWindows()
-
+#if k == 27:        
+#    cv2.destroyAllWindows()
+#elif k == ord('s'): 
+#    cv2.imwrite(MyImage,img)
+#    cv2.destroyAllWindows()
+    
