@@ -32,6 +32,7 @@ orange = (3, 64, 252)
 floMinExtent = 0.5
 floMinArea = 400.0
 floImageMultiplier = 3.0
+booBlankUpper = True
 
 # definitions of ...
 # from Merge ChickenVision 2019
@@ -120,9 +121,9 @@ strVisionRoot = posCodePath.parent.parent
 #strImageFolder = str(strVisionRoot / 'DistanceImages') 
 strImageFolder = str(strVisionRoot / '2706-Elimins-Images')
 #strImageFolder = str(strVisionRoot / 'EllipseImages')
+#strImageFolder = str(strVisionRoot / 'PowerCellSketchup')
 
 print (strImageFolder)
-booBlankUpper = True
 
 # read file names, and filter file names
 photos = []
@@ -234,7 +235,7 @@ while (True):
     ## display the masked images to screen
     #    cv2.imshow('hsvImageInput', hsvImageInput)
     #    cv2.imshow('binary_mask', binary_mask)
-    #    cv2.imshow('yellow_masked', yellow_mask)
+    cv2.imshow('yellow_masked', yellow_mask)
 
     ## generate the contours
     imgFindContours, contours, hierarchy = cv2.findContours(binary_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
